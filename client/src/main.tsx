@@ -8,6 +8,7 @@ import Signup from './pages/Signup';
 import Login from './pages/Login';
 import Profile from './pages/Profile';
 import ErrorPage from './pages/Error';
+import Game from './pages/Game';
 
 const router = createBrowserRouter([
   {
@@ -18,6 +19,9 @@ const router = createBrowserRouter([
       {
         index: true,
         element: <Home />
+      }, {
+        path: '/game',
+        element: <Game />
       }, {
         path: '/login',
         element: <Login />
