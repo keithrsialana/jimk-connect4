@@ -23,8 +23,9 @@ const Footer: React.FC = () => {
             &larr; Go Back
           </button>
         )}
+        <img src="../public/MainLogo.png" alt="JIMK Connect 4 Logo" />
         <h4>
-          JIMK Team
+          Team
         </h4>
       </div>
     </footer>
