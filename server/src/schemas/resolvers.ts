@@ -13,6 +13,17 @@ interface AddUserArgs {
   }
 }
 
+interface UpdateUserArgs{
+  input:{
+    username: string;
+    email: string;
+    password: string;
+    games_played?: number; // Optional field
+    games_won?: number;    // Optional field
+    games_lost?: number;   // Optional field
+  }
+}
+
 interface LoginUserArgs {
   email: string;
   password: string;
@@ -25,17 +36,17 @@ interface UserArgs {
 const resolvers = {
   Query: {
     users: async () => {
-      return User.find().populate('thoughts');
+      return User.find();
     },
     user: async (_parent: any, { username }: UserArgs) => {
-      return User.findOne({ username }).populate('thoughts');
+      return User.findOne({ username });
     },
     // Query to get the authenticated user's information
     // The 'me' query relies on the context to check if the user is authenticated
     me: async (_parent: any, _args: any, context: any) => {
       // If the user is authenticated, find and return the user's information along with their thoughts
       if (context.user) {
-        return User.findOne({ _id: context.user._id }).populate('thoughts');
+        return User.findOne({ _id: context.user._id });
       }
       // If the user is not authenticated, throw an AuthenticationError
       throw new AuthenticationError('Could not authenticate user.');
@@ -76,6 +87,18 @@ const resolvers = {
       // Return the token and the user
       return { token, user };
     },
+
+    updateUser: async (_parent:any, {input}: UpdateUserArgs, context:any) =>{
+      if(context.user) {
+        const updatedUser =await User.findOneAndUpdate(
+          { _id: context.user._id },
+          { $set: { ...input } },
+          { new: true }
+        );
+        return updatedUser;
+      }
+      throw new AuthenticationError('Count not authenticate user.')
+    }
   },
 };
 
