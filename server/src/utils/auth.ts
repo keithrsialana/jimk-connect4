@@ -32,9 +32,9 @@ export const authenticateToken = ({ req }: any) => {
   return req;
 };
 
-export const signToken = (username: string, email: string, _id: unknown) => {
+export const signToken = (username: string, email: string, _id: unknown, games_played?: number, games_won?: number, games_lost?: number) => {
   // Create a payload with the user information
-  const payload = { username, email, _id };
+  const payload = { username, email, _id, games_played, games_won, games_lost};
   const secretKey: any = process.env.JWT_SECRET_KEY; // Get the secret key from environment variables
 
   // Sign the token with the payload and secret key, and set it to expire in 2 hours
