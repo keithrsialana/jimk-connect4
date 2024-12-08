@@ -7,6 +7,9 @@ interface AddUserArgs {
     username: string;
     email: string;
     password: string;
+    games_played?: number; // Optional field
+    games_won?: number;    // Optional field
+    games_lost?: number;   // Optional field
   }
 }
 
@@ -40,7 +43,7 @@ const resolvers = {
   },
   Mutation: {
     addUser: async (_parent: any, { input }: AddUserArgs) => {
-      // Create a new user with the provided username, email, and password
+      // Create a new user with the provided username, email, and password and optional parameters... 
       const user = await User.create({ ...input });
     
       // Sign a token with the user's information
