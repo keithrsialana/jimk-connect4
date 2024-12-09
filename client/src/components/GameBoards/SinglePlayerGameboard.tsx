@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
-import WinnerModal from "./WinnerModal";
-import SetPlayerModal from "./SetPlayerModal";
+import WinnerModal from "../WinnerModal";
+import SetPlayerModal from "../SetPlayerModal";
 
-const GameBoard: React.FC = () => {
+const SinglePlayerGameBoard: React.FC = () => {
 	const [gamestart, setGameStart] = useState<boolean>(false);
 	const [player1, setPlayer1] = useState<string>("");
 	const [player2, setPlayer2] = useState<string>("");
@@ -152,4 +152,4 @@ const GameBoard: React.FC = () => {
 	);
 };
 
-export default GameBoard;
+export default SinglePlayerGameBoard;
