@@ -1,31 +1,33 @@
 import { useEffect } from "react";
 import Auth from "../utils/auth";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const Home = () => {
-  const navigate = useNavigate();
-  
-  // if user isn't logged in, forcefully push user to login page
-  useEffect(() => {
-    if (!Auth.loggedIn())
-      navigate('/login');
-  }, []);
+	const navigate = useNavigate();
 
-  return (
-    <main>
-      <div className="flex-row justify-center">
-        <div
-          className="col-12 col-md-10 mb-3 p-3"
-          style={{ border: '1px dotted #1a1a1a' }}
-        >
-          <></>
-        </div>
-        <div className="col-12 col-md-8 mb-3">
-          <></>
-        </div>
-      </div>
-    </main>
-  );
+	// if user isn't logged in, forcefully push user to login page
+	useEffect(() => {
+		if (!Auth.loggedIn()) navigate("/login");
+	}, []);
+
+	return (
+		<main>
+			<div className="flex-column justify-center align">
+				<Link to="" className="btn btn-primary py-3">
+					Create a room
+				</Link>
+				<Link to="" className="btn btn-primary mt-2 py-3">
+					Join a room
+				</Link>
+				<Link to="" className="btn btn-primary mt-2 py-3">
+          Join a random room
+				</Link>
+				<Link to="" className="btn btn-primary mt-2 py-3">
+					View your profile
+				</Link>
+			</div>
+		</main>
+	);
 };
 
 export default Home;

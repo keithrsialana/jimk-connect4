@@ -1,29 +1,92 @@
 :root {
 	--primary: #091540;
 	--primary-lighter: #0f2265;
-	--secondary: #6A041D;
-	--tertiary: #F5B841;
-    --yellow: #F4FF52;
-    --yellow-darker: #b2bc21;
-    --green: #53FF45;
-    --green-darker: #22a416;
+	--secondary: #6a041d;
+	--tertiary: #f5b841;
+	--yellow: #f4ff52;
+	--yellow-darker: #b2bc21;
+	--green: #53ff45;
+	--green-darker: #22a416;
+}
+
+body {
+	color: white;
+}
+
+.btn.btn-primary {
+	background-color: var(--tertiary);
+	color: black;
+}
+
+.btn.btn-primary:hover {
+	background-color: #d19827;
+}
+
+.card {
+	border: 1px solid var(--primary) !important;
+	border-radius: 20px 20px 0 0;
+}
+
+.card .card-header {
+	border-radius: 20px 20px 0 0;
+	background-color: var(--primary) !important;
+}
+
+.header {
+	border-radius: 0 0 20px 20px;
+}
+.footer {
+	border-radius: 20px 20px 0 0;
 }
 
 .bg-primary {
-    background-color: var(--primary);
+	background-color: var(--primary);
 }
 .bg-primary-lighter {
-    background-color: var(--primary-lighter);
+	background-color: var(--primary-lighter);
 }
 
 .bg-secondary {
-    background-color: var(--secondary);
+	background-color: var(--secondary);
 }
 
 .btn.btn-info {
-    background-color: var(--green-darker) !important;
+	background-color: var(--green-darker) !important;
 }
 
 .btn.btn-info:hover {
-    background-color: var(--green) !important;
+	background-color: var(--green) !important;
+}
+
+.modal-overlay {
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background: rgba(0, 0, 0, 0.5);
+	display: flex;
+	justify-content: center;
+	align-items: flex-start; /* Align to the top */
+	animation: slideIn 0.5s forwards; /* Animation for sliding in */
+}
+
+.modal-content {
+	background: white;
+    color: black;
+	padding: 20px;
+	border-radius: 8px;
+	margin-top: 20px; /* Space from the top */
+	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+@keyframes slideIn {
+	from {
+		transform: translateY(-100%); /* Start from above */
+		opacity: 0;
+	}
+	to {
+		transform: translateY(0);
+		opacity: 1;
+	}
 }

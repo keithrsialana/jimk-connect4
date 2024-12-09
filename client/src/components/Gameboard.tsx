@@ -1,14 +1,15 @@
 import React, { useState } from "react";
+import WinnerModal from "./WinnerModal";
 
 const GameBoard: React.FC = () => {
 	// standard connect 4 size
 	const rows: number = 6;
 	const cols: number = 7;
 
-	const [board, setBoard] = useState<(null | "red" | "yellow")[][]>(
+	const [board, setBoard] = useState<(null | "Red" | "Yellow")[][]>(
 		Array.from({ length: rows }, () => Array(cols).fill(null))
 	);
-	const [currentPlayer, setCurrentPlayer] = useState<"red" | "yellow">("red");
+	const [currentPlayer, setCurrentPlayer] = useState<"Red" | "Yellow">("Red");
 
 	function handleMove(col: number): void {
 		// finds lowest available row
@@ -21,11 +22,10 @@ const GameBoard: React.FC = () => {
 
 				setTimeout(() => {
 					if (checkWinner(newBoard, r, col)) {
-						alert(`${currentPlayer} wins!`);
-						resetGame();
+						handleGameEnd(`${currentPlayer}`);
 						// switches player
 					} else {
-						setCurrentPlayer(currentPlayer === "red" ? "yellow" : "red");
+						setCurrentPlayer(currentPlayer === "Red" ? "Yellow" : "Red");
 					}
 				}, 100);
 
@@ -36,7 +36,7 @@ const GameBoard: React.FC = () => {
 	}
 
 	const checkWinner = (
-		board: (null | "red" | "yellow")[][],
+		board: (null | "Red" | "Yellow")[][],
 		row: number,
 		col: number
 	): boolean => {
@@ -58,7 +58,7 @@ const GameBoard: React.FC = () => {
 	};
 
 	const countDirection = (
-		board: (null | "red" | "yellow")[][],
+		board: (null | "Red" | "Yellow")[][],
 		row: number,
 		col: number,
 		dr: number,
@@ -85,26 +85,40 @@ const GameBoard: React.FC = () => {
 	const resetGame = () => {
 		// clear game board
 		setBoard(Array.from({ length: rows }, () => Array(cols).fill(null)));
-		setCurrentPlayer("red");
+		setCurrentPlayer("Red");
+	};
+
+	const [winner, setWinner] = useState<string | null>(null);
+
+	const handleGameEnd = (winningPlayer: string) => {
+		setWinner(winningPlayer);
+	};
+
+	const handleCloseModal = () => {
+		setWinner(null);
+		resetGame();
 	};
 
 	return (
 		<div className="game-container">
 			<div>
-				Current Player: <span className={currentPlayer}>{currentPlayer}</span>
+				Current Player: <span className={currentPlayer.toLowerCase()}>{currentPlayer}</span>
 			</div>
 			<div className="game-board">
 				{board.map((row, r) =>
 					row.map((cell, c) => (
 						<div
 							key={`${r}-${c}`}
-							className={`cell ${cell || ""}`}
+							className={`cell ${cell?.toLowerCase() || ""}`}
 							onClick={() => handleMove(c)}
 						></div>
 					))
 				)}
 			</div>
-			<button onClick={resetGame}>Restart Game</button>
+			<button className="btn btn-danger" onClick={resetGame}>
+				Restart Game
+			</button>
+			<WinnerModal winner={winner} onClose={handleCloseModal} />
 		</div>
 	);
 };

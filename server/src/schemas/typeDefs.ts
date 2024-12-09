@@ -4,13 +4,20 @@ const typeDefs = `
     username: String
     email: String
     password: String
+    games_played: Int 
+    games_won: Int   
+    games_lost: Int 
   }
 
   input UserInput {
     username: String!
     email: String!
     password: String!
+    games_played: Int 
+    games_won: Int   
+    games_lost: Int 
   }
+    
   
   type Auth {
     token: ID!
@@ -26,6 +33,7 @@ const typeDefs = `
   type Mutation {
     addUser(input: UserInput!): Auth
     login(email: String!, password: String!): Auth
+    updateUser(input: UserInput!): User
   }
 `;
 
