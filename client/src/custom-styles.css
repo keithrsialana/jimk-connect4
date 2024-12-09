@@ -13,6 +13,15 @@ body {
 	color: white;
 }
 
+.btn {
+    font-size: larger;
+    font-weight: bold;
+}
+
+.btn:hover {
+    text-decoration: none;
+}
+
 .btn.btn-primary {
 	background-color: var(--tertiary);
 	color: black;
