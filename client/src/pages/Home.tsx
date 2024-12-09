@@ -25,6 +25,9 @@ const Home = () => {
 				<Link to="" className="btn btn-primary mt-2 py-3">
 					View your profile
 				</Link>
+        <div className="btn btn-danger mt-2 py-3">
+          Logout
+        </div>
 			</div>
 		</main>
 	);
