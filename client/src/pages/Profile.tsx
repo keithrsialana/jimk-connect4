@@ -1,7 +1,7 @@
 import { Navigate, useParams } from "react-router-dom";
 import { useQuery, useMutation } from "@apollo/client";
 import { QUERY_USER, QUERY_ME } from "../utils/queries";
-import { UPDATE_USER } from "../utils/mutations"; // Ensure DELETE_USER is imported
+import { UPDATE_USER, DELETE_USER } from "../utils/mutations"; // Ensure DELETE_USER is imported
 import Auth from "../utils/auth";
 import { useState } from "react";
 
@@ -26,6 +26,7 @@ const Profile = () => {
   const [existingPassword, setExistingPassword] = useState(""); // Existing password for confirmation
   const [newPassword, setNewPassword] = useState(""); // New password
   const [updateUser] = useMutation(UPDATE_USER);
+  const [deleteUser] = useMutation(DELETE_USER);
 
   // This if condition checks if the user is logged in and if the logged-in user's username matches the userParam.
   if (Auth.loggedIn() && Auth.getProfile().data.username === userParam) {
@@ -68,10 +69,26 @@ const Profile = () => {
         ],
       });
       alert("Profile updated successfully!");
-    } catch (error:any) {
+    } catch (error: any) {
       console.error(error);
       alert("Error updating user: " + (error.graphQLErrors[0]?.message || error.message));
     }
+};
+
+const handleDelete = async () => {
+  const confirmDelete = window.confirm ("Are You sure you want to delete your profile? This action can not be undone!");
+  if(confirmDelete){
+    try {
+      await deleteUser ({
+        variables: {userId: user._id}
+      })
+      alert("Profile deleted successfully!");
+      window.location.href = "/";
+    } catch(error: any){
+      console.error(error);
+      alert("Error deleting user: " + (error.graphQLErrors[0]?.message || error.message))
+    }
+  }
 };
 
   return (
@@ -141,9 +158,9 @@ const Profile = () => {
       </form>
 
       {/* Delete Profile Button */}
-      {/* <button onClick={handleDelete} style={{ marginTop: '20px', backgroundColor: 'red', color: 'white' }}>
+      <button onClick={handleDelete} style={{ marginTop: '20px', backgroundColor: 'red', color: 'white' }}>
         Delete Profile
-      </button> */}
+      </button>
     </div>
   );
 };
