@@ -23,3 +23,16 @@ export const ADD_USER = gql`
   }
 }
 `;
+
+export const UPDATE_USER = gql`
+  mutation updateUser($input: UpdateUser) {
+    updateUser(input: $input) {
+      _id
+      username
+      email
+      games_played
+      games_won
+      games_lost
+    }
+  }
+`;
