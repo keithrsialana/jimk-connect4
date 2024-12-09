@@ -1,7 +1,12 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import WinnerModal from "./WinnerModal";
+import SetPlayerModal from "./SetPlayerModal";
 
 const GameBoard: React.FC = () => {
+	const [gamestart, setGameStart] = useState<boolean>(false);
+	const [player1, setPlayer1] = useState<string>("");
+	const [player2, setPlayer2] = useState<string>("");
+
 	// standard connect 4 size
 	const rows: number = 6;
 	const cols: number = 7;
@@ -94,32 +99,56 @@ const GameBoard: React.FC = () => {
 		setWinner(winningPlayer);
 	};
 
-	const handleCloseModal = () => {
+	const handleCloseWinnerModal = () => {
 		setWinner(null);
 		resetGame();
 	};
 
+	const handleSetPlayer = (player:number, username:string) => {
+		if (player == 1)
+			setPlayer1(username);
+		else if (player == 2)
+			setPlayer2(username);
+	}
+
+	useEffect(() => {
+		// if both players are set, start the game
+		if (player1 && player2)
+			setGameStart(true);
+	},[player1,player2]);
+
 	return (
-		<div className="game-container">
-			<div>
-				Current Player: <span className={currentPlayer.toLowerCase()}>{currentPlayer}</span>
-			</div>
-			<div className="game-board">
-				{board.map((row, r) =>
-					row.map((cell, c) => (
-						<div
-							key={`${r}-${c}`}
-							className={`cell ${cell?.toLowerCase() || ""}`}
-							onClick={() => handleMove(c)}
-						></div>
-					))
-				)}
-			</div>
-			<button className="btn btn-danger" onClick={resetGame}>
-				Restart Game
-			</button>
-			<WinnerModal winner={winner} onClose={handleCloseModal} />
-		</div>
+		<>
+			{gamestart ? (
+				<div className="game-container">
+					<div>
+						Current Player:{" "}
+						<span className={currentPlayer.toLowerCase()}>{currentPlayer == "Red" ? player1 : player2}</span>
+					</div>
+					<div className="game-board">
+						{board.map((row, r) =>
+							row.map((cell, c) => (
+								<div
+									key={`${r}-${c}`}
+									className={`cell ${cell?.toLowerCase() || ""}`}
+									onClick={() => handleMove(c)}
+								></div>
+							))
+						)}
+					</div>
+					<button className="btn btn-danger" onClick={resetGame}>
+						Restart Game
+					</button>
+					<WinnerModal winner={winner} onClose={handleCloseWinnerModal} />
+				</div>
+			) : (
+				<>
+					<h2>Starting Game...</h2>
+					<SetPlayerModal playerNum={1} onSetPlayer={handleSetPlayer} />
+					<SetPlayerModal playerNum={2} onSetPlayer={handleSetPlayer} />
+				</>
+			)}
+		</>
 	);
 };
 
