@@ -14,17 +14,10 @@ const Header = () => {
 
 				<div>
 					{Auth.loggedIn() ? (
-							<Link to="/game">
-								<button className="btn btn-lg btn-light m-2">Play</button>
-							</Link>
-					) : (
-						<></>
-					)}
-					{Auth.loggedIn() ? (
 						<>
-							<Link className="btn btn-lg btn-info m-2" to="/me">
+							<Link className="btn btn-lg btn-info m-2" to="/">
 								{/* Retrieving the logged-in user's profile to display the username */}
-								{Auth.getProfile().data.username}'s Profile
+								Home
 							</Link>
 						</>
 					) : (
