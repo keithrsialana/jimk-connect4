@@ -68,6 +68,12 @@ const Profile = () => {
           { query: userParam ? QUERY_USER : QUERY_ME, variables: { username: userParam } }
         ],
       });
+
+      setUsername("");
+      setEmail("");
+      setExistingPassword("");
+      setNewPassword("");
+      
       alert("Profile updated successfully!");
     } catch (error: any) {
       console.error(error);
@@ -93,30 +99,32 @@ const handleDelete = async () => {
 
   return (
     <div>
-      <div className="flex-row justify-center mb-3">
+      {/* <div className="flex-row justify-center mb-3">
         <h2 className="col-12 col-md-10 bg-dark text-light p-3 mb-5">
           Viewing {userParam ? `${user.username}'s` : "your"} profile.
         </h2>
-      </div>
-      <div className="Profile-details">
-        <h3>Profile Details:</h3>
-        <p>
+      </div> */}
+      <div className="Profile-details card-bg">
+        <div className="card-title">
+          <h3 className="card-items">Profile Details:</h3>
+        </div>
+        <p className="card-items">
           <strong>Username: </strong>
           {user.username}
         </p>
-        <p>
+        <p className="card-items">
           <strong>Email: </strong>
           {user.email}
         </p>
-        <p>
+        <p className="card-items">
           <strong>Games Played: </strong>
           {user.games_played}
         </p>
-        <p>
+        <p className="card-items">
           <strong>Games Won: </strong>
           {user.games_won}
         </p>
-        <p>
+        <p className="card-items">
           <strong>Games Lost: </strong>
           {user.games_lost}
         </p>
@@ -127,6 +135,7 @@ const handleDelete = async () => {
         <h3>Update Profile</h3>
         
         <input
+          className="input"
           type="text"
           value={username}
           onChange={(e) => setUsername(e.target.value)}
@@ -134,27 +143,33 @@ const handleDelete = async () => {
         />
         
         <input
+          className="input"
           type="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           placeholder="New Email (optional)"
         />
-        
+      
         <input
+          className="input"        
+          type="password"
+          value={newPassword}
+          onChange={(e) => setNewPassword(e.target.value)}
+          placeholder="New Password (optional)"
+        />
+
+        <input
+          className="input"        
           type="password"
           value={existingPassword}
           onChange={(e) => setExistingPassword(e.target.value)}
           placeholder="Enter Existing Password (required)"
           required // This field is required for confirmation
         />
-        
-        <input
-          type="password"
-          value={newPassword}
-          onChange={(e) => setNewPassword(e.target.value)}
-          placeholder="New Password (optional)"
-        />
-        <button type="submit">Update</button>
+        <button
+          className="btn"
+          type="submit">Update
+        </button>
       </form>
 
       {/* Delete Profile Button */}

@@ -36,6 +36,39 @@ body {
 	border-radius: 20px 20px 0 0;
 }
 
+.card-bg{
+	border: 1px solid var(--primary) !important;
+	border-radius: 15px 15px;
+	background-color: #2b2b4f;
+	margin: 2rem;
+	display: flex;
+	flex-direction: column;
+	justify-content: flex-start;
+	box-shadow: 0 15px 13px rgba(0, 0, 0, 0.2);
+	/* align-items: flex-center; */
+	/* flex-grow: calc(); */
+}
+
+.card-title{
+	background-color: #6a041d;
+	padding-top: .5rem;
+	padding-bottom: .5rem;
+	border-top-left-radius: 15px;
+	border-top-right-radius: 15px;
+}
+
+.card-items{
+	margin: 1rem;
+	align-items: center;
+	justify-content: center;
+
+}
+
+.input{
+	margin-right: 2rem;
+	margin-bottom: 2rem;
+}
+
 .card .card-header {
 	border-radius: 20px 20px 0 0;
 	background-color: var(--primary) !important;
