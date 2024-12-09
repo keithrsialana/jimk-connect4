@@ -1,10 +1,12 @@
-import { useEffect, type MouseEvent } from "react";
+import { useEffect, useState, type MouseEvent } from "react";
 import Auth from "../utils/auth";
 import { Link, useNavigate } from "react-router-dom";
+import InviteModal from "../components/InviteModal/InviteModal";
 import {} from "react";
 
 const Home = () => {
 	const navigate = useNavigate();
+  const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
 
 	// if user isn't logged in, forcefully push user to login page
 	useEffect(() => {
@@ -17,6 +19,14 @@ const Home = () => {
 		Auth.logout();
 	};
 
+  const openInviteModal = () => {
+    setIsInviteModalOpen(true); // Open the modal
+  };
+
+  const closeInviteModal = () => {
+    setIsInviteModalOpen(false); // Close the modal
+  };
+
 	return (
 		<main>
 			<div className="flex-column justify-center align">
@@ -26,9 +36,9 @@ const Home = () => {
 				<Link to="" className="btn btn-primary mt-2 py-3">
 					Create a room
 				</Link>
-				<Link to="" className="btn btn-primary mt-2 py-3">
-					Join a room
-				</Link>
+				<Link to="" className="btn btn-primary mt-2 py-3" onClick={openInviteModal}>
+          Join a room
+        </Link>
 				<Link to="" className="btn btn-primary mt-2 py-3">
 					Join a random room
 				</Link>
@@ -38,6 +48,7 @@ const Home = () => {
 				<button className="btn btn-danger mt-2 py-3" onClick={logout}>
 					Logout
 				</button>
+        <InviteModal isOpen={isInviteModalOpen} onClose={closeInviteModal}></InviteModal>
 			</div>
 		</main>
 	);
