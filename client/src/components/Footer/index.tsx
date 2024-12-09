@@ -1,29 +1,9 @@
-import { useLocation, useNavigate } from 'react-router-dom';
-
 const Footer: React.FC = () => {
-  const location = useLocation();
-  const navigate = useNavigate();
-
-  const handleGoBack = () => {
-    if(window.history.length > 1) { //Check if there is a previous page in the history stack
-      navigate(-1);
-    } else {
-      navigate('/');
-    }
-  }
 
   return (
-    <footer className="w-100 mt-auto bg-secondary p-4">
+    <footer className="footer w-100 mt-auto bg-primary-lighter p-4 text-light">
       <div className="container text-center mb-5">
-        {location.pathname !== '/' && (
-          <button
-            className="btn btn-dark mb-3"
-            onClick={handleGoBack}
-          >
-            &larr; Go Back
-          </button>
-        )}
-        <img src="../public/MainLogo.png" alt="JIMK Connect 4 Logo" />
+        <img src="../public/MainLogo-Light.png" alt="JIMK Connect 4 Logo" />
         <h4>
           Team
         </h4>

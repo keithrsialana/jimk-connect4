@@ -883,72 +883,72 @@ a:hover {
 }
 
 .text-primary {
-  color: #2d3e50 !important;
+  color: #2d3e50;
 }
 
 .text-info {
-  color: #1bbc9b !important;
+  color: #1bbc9b;
 }
 
 .text-danger {
-  color: #e64c66 !important;
+  color: #e64c66;
 }
 
 .text-default {
-  color: #aeaeae !important;
+  color: #aeaeae;
 }
 
 .text-light {
-  color: #d9e9e8 !important;
+  color: #d9e9e8;
 }
 
 .text-dark {
-  color: #1a1a1a !important;
+  color: #1a1a1a;
 }
 
 .text-white {
-  color: #ffffff !important;
+  color: #ffffff;
 }
 
 .text-black {
-  color: #000000 !important;
+  color: #000000;
 }
 
 .text-link {
-  color: #1b89bc !important;
+  color: #1b89bc;
 }
 
 /* BACKGROUND UTILS */
 .bg-primary {
-  background-color: #2d3e50 !important;
+  background-color: #2d3e50;
 }
 
 .bg-info {
-  background-color: #1bbc9b !important;
+  background-color: #1bbc9b;
 }
 
 .bg-danger {
-  background-color: #e64c66 !important;
+  background-color: #e64c66;
 }
 
 .bg-light {
-  background-color: #d9e9e8 !important;
+  background-color: #d9e9e8;
 }
 
 .bg-dark {
-  background-color: #1a1a1a !important;
+  background-color: #1a1a1a;
 }
 
 .bg-white {
-  background-color: #ffffff !important;
+  background-color: #ffffff;
 }
 
 .bg-black {
-  background-color: #000000 !important;
+  background-color: #000000;
 }
 
 .bg-link {
-  background-color: #1b89bc !important;
+  background-color: #1b89bc;
 }
 
 /* DISPLAY */
