@@ -1,13 +1,7 @@
 import { Link } from "react-router-dom";
-import { type MouseEvent } from "react";
 import Auth from "../../utils/auth";
 
 const Header = () => {
-	const logout = (event: MouseEvent<HTMLButtonElement>) => {
-		event.preventDefault();
-		// Logs the user out by calling the logout method from Auth
-		Auth.logout();
-	};
 
 	return (
 		<header className="header bg-primary-lighter text-light mb-4 py-3 flex-row align-center">
@@ -32,9 +26,6 @@ const Header = () => {
 								{/* Retrieving the logged-in user's profile to display the username */}
 								{Auth.getProfile().data.username}'s Profile
 							</Link>
-							<button className="btn btn-lg btn-light m-2" onClick={logout}>
-								Logout
-							</button>
 						</>
 					) : (
 						<>
