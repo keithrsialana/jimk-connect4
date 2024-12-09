@@ -129,11 +129,11 @@ const startApolloServer = async () => {
     });
 
     // Handle the testConnection event
-    socket.on("testConnection", (data, callback) => {
-      console.log("Test connection data received:", data);
-      // Send an acknowledgment back to the client
-      callback({ status: "success", message: "Connection test successful" });
-    });
+    // socket.on("testConnection", (data, callback) => {
+    //   console.log("Test connection data received:", data);
+    //   // Send an acknowledgment back to the client
+    //   callback({ status: "success", message: "Connection test successful" });
+    // });
 
     // Handle creating a room with a unique ID
     socket.on("createRoom", () => {
