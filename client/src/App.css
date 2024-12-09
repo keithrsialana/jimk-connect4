@@ -1712,6 +1712,7 @@ label form [type='radio'] {
 ============================================================================================ */
 
 .game-container {
+  position: relative;
   text-align: center;
   margin: 20px auto;
 }
@@ -1729,16 +1730,18 @@ label form [type='radio'] {
   grid-template-columns: repeat(7, 50px);
   grid-gap: 5px;
   margin: 20px auto;
+  margin-top: 4rem;
   justify-content: center;
 }
 
 .cell {
   width: 50px;
   height: 50px;
-  background-color: #ddd;
-  border: 1px solid #999;
+  background-color: ;
+  border: 4px solid #999;
   border-radius: 50%;
   cursor: pointer;
+  z-index: 5;
 }
 
 .cell.red {
@@ -1747,4 +1750,39 @@ label form [type='radio'] {
 
 .cell.yellow {
   background-color: yellow;
+}
+
+.chip.red {
+  background-color: red;
+}
+
+.chip.yellow {
+  background-color: yellow;
+}
+
+@keyframes drop {
+	from {
+		top: 5px;
+	}
+
+	to {
+		transform: translateY(164%);
+	}
+}
+
+.chip {
+	width: 50px;
+	height: 50px;
+	border-radius: 50%;
+	position: absolute;
+	animation: drop 1s ease-in-out;
+  /* top: -100px; */
+	/* Adjust duration and easing for smooth animation */
+	z-index: 0;
+	/* Ensure it's above the board temporarily */
+  will-change: transform;
+}
+
+.button-margin {
+  margin-top: 3rem;
 }

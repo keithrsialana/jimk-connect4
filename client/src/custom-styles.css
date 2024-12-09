@@ -14,12 +14,12 @@ body {
 }
 
 .btn {
-    font-size: larger;
-    font-weight: bold;
+	font-size: larger;
+	font-weight: bold;
 }
 
 .btn:hover {
-    text-decoration: none;
+	text-decoration: none;
 }
 
 .btn.btn-primary {
@@ -36,7 +36,7 @@ body {
 	border-radius: 20px 20px 0 0;
 }
 
-.card-bg{
+.card-bg {
 	border: 1px solid var(--primary) !important;
 	border-radius: 15px 15px;
 	background-color: #2b2b4f;
@@ -49,7 +49,7 @@ body {
 	/* flex-grow: calc(); */
 }
 
-.card-title{
+.card-title {
 	background-color: #6a041d;
 	padding-top: .5rem;
 	padding-bottom: .5rem;
@@ -57,14 +57,14 @@ body {
 	border-top-right-radius: 15px;
 }
 
-.card-items{
+.card-items {
 	margin: 1rem;
 	align-items: center;
 	justify-content: center;
 
 }
 
-.input{
+.input {
 	margin-right: 2rem;
 	margin-bottom: 2rem;
 }
@@ -77,6 +77,7 @@ body {
 .header {
 	border-radius: 0 0 20px 20px;
 }
+
 .footer {
 	border-radius: 20px 20px 0 0;
 }
@@ -84,6 +85,7 @@ body {
 .bg-primary {
 	background-color: var(--primary);
 }
+
 .bg-primary-lighter {
 	background-color: var(--primary-lighter);
 }
@@ -109,24 +111,29 @@ body {
 	background: rgba(0, 0, 0, 0.5);
 	display: flex;
 	justify-content: center;
-	align-items: flex-start; /* Align to the top */
-	animation: slideIn 0.5s forwards; /* Animation for sliding in */
+	align-items: flex-start;
+	/* Align to the top */
+	animation: slideIn 0.5s forwards;
+	/* Animation for sliding in */
 }
 
 .modal-content {
 	background: white;
-    color: black;
+	color: black;
 	padding: 20px;
 	border-radius: 8px;
-	margin-top: 20px; /* Space from the top */
+	margin-top: 20px;
+	/* Space from the top */
 	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
 @keyframes slideIn {
 	from {
-		transform: translateY(-100%); /* Start from above */
+		transform: translateY(-100%);
+		/* Start from above */
 		opacity: 0;
 	}
+
 	to {
 		transform: translateY(0);
 		opacity: 1;

@@ -12,23 +12,47 @@ const GameBoard: React.FC = () => {
 	const [currentPlayer, setCurrentPlayer] = useState<"Red" | "Yellow">("Red");
 
 	function handleMove(col: number): void {
-		// finds lowest available row
 		for (let r = rows - 1; r >= 0; r--) {
 			if (!board[r][col]) {
-				board[r][col] = currentPlayer;
-				const newBoard = board.map((row) => [...row]);
-				newBoard[r][col] = currentPlayer;
-				setBoard(newBoard);
-
-				setTimeout(() => {
-					if (checkWinner(newBoard, r, col)) {
-						handleGameEnd(`${currentPlayer}`);
-						// switches player
-					} else {
-						setCurrentPlayer(currentPlayer === "Red" ? "Yellow" : "Red");
+				const cell = document.querySelector(
+					`.game-board .cell:nth-child(${r * cols + col + 1})`
+				);
+				if (cell) {
+					const chip = document.createElement("div");
+					chip.className = `chip ${currentPlayer.toLowerCase()}`;
+	
+					const gameBoard = document.querySelector(".game-board");
+					if (gameBoard) {
+						const gameBoardRect = gameBoard.getBoundingClientRect();
+						const cellRect = (cell as HTMLElement).getBoundingClientRect();
+	
+						chip.style.left = `${cellRect.left - gameBoardRect.left}px`; // Horizontal alignment
+	
+						const gameContainer = document.querySelector(".game-container");
+						if (gameContainer) {
+							gameContainer.appendChild(chip);
+	
+							setTimeout(() => {
+								chip.style.top = `${cellRect.top - gameBoardRect.top}px`; // Move to the correct row
+								chip.style.left = `${cellRect.left - gameBoardRect.left}px`; // Align horizontally
+							}, 0);
+	
+							chip.addEventListener("animationend", () => {
+								gameContainer.removeChild(chip);
+	
+								const newBoard = board.map((row) => [...row]);
+								newBoard[r][col] = currentPlayer;
+								setBoard(newBoard);
+	
+								if (checkWinner(newBoard, r, col)) {
+									handleGameEnd(`${currentPlayer}`);
+								} else {
+									setCurrentPlayer(currentPlayer === "Red" ? "Yellow" : "Red");
+								}
+							});
+						}
 					}
-				}, 100);
-
+				}
 				return;
 			}
 		}
@@ -97,12 +121,15 @@ const GameBoard: React.FC = () => {
 	const handleCloseModal = () => {
 		setWinner(null);
 		resetGame();
+		setWinner(null);
+		// setIsMoveInProgress(false); // Reset lock
 	};
 
 	return (
 		<div className="game-container">
-			<div>
-				Current Player: <span className={currentPlayer.toLowerCase()}>{currentPlayer}</span>
+			<div className="mt-3">
+				Current Player:{" "}
+				<span className={currentPlayer.toLowerCase()}>{currentPlayer}</span>
 			</div>
 			<div className="game-board">
 				{board.map((row, r) =>
@@ -115,7 +142,7 @@ const GameBoard: React.FC = () => {
 					))
 				)}
 			</div>
-			<button className="btn btn-danger" onClick={resetGame}>
+			<button className="btn btn-danger button-margin" onClick={resetGame}>
 				Restart Game
 			</button>
 			<WinnerModal winner={winner} onClose={handleCloseModal} />
