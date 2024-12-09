@@ -34,6 +34,10 @@ interface UserArgs {
   username: string;
 }
 
+interface DeleteUserArgs {
+  userId: string; // The ID of the user to delete
+}
+
 const resolvers = {
   Query: {
     users: async () => {
@@ -116,6 +120,10 @@ const resolvers = {
           updates.password = await bcrypt.hash(input.password, saltRounds);
         }
 
+        if(input.games_played)  updates.games_played = input.games_played;
+        if(input.games_won)  updates.games_won = input.games_won;
+        if(input.games_lost)  updates.games_lost = input.games_lost;
+
         const updatedUser = await User.findOneAndUpdate(
           { _id: context.user._id },
           { $set: updates }, // Only set the provided fields
@@ -140,6 +148,18 @@ const resolvers = {
       }
       throw new AuthenticationError("Could not authenticate user.");
     },
+    
+    deleteUser: async (_parent: any, { userId }: DeleteUserArgs, context: any) => {
+      if (context.user) {
+        const deletedUser = await User.findOneAndDelete({ _id: userId });
+        if (!deletedUser) {
+          throw new Error("User not found or could not be deleted.");
+        }
+        return deletedUser; // Return the deleted user information
+      }
+      throw new AuthenticationError("Could not authenticate user.");
+    },
+
   },
 };
 
