@@ -1,6 +1,7 @@
 // InviteModal.tsx
 import React, { useState } from "react";
 import { useSocket } from "../../context/SocketContext";
+import Auth from "../../utils/auth";
 
 interface InviteModalProps {
 	isOpen: boolean;
@@ -18,10 +19,11 @@ const InviteModal: React.FC<InviteModalProps> = ({ isOpen, onClose }) => {
 	};
 
 	const handleSubmit = (event: React.FormEvent) => {
+		const myUsername = Auth.getProfile().data.username;
 		event.preventDefault();
 		// Handle the invite Code submission (e.g., send it to a server or copy to clipboard)
 		console.log("Invite Code:", inviteCode);
-		socket?.emit('joinRoom', inviteCode);
+		socket?.emit('joinRoom', inviteCode, myUsername);
 		onClose(); // Close the modal after submission
 	};
 
