@@ -28,7 +28,8 @@ const Home = () => {
   });
 
   const handleCreateRoom = () => {
-	socket?.emit('createRoom');
+    const myUsername = Auth.getProfile().data.username;
+	  socket?.emit('createRoom', myUsername);
   }
 
   const logout = (event: MouseEvent<HTMLButtonElement>) => {

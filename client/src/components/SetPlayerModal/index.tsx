@@ -7,13 +7,13 @@ interface UserProfile {
 	username?: string;
 	email?: string;
 	password?: string;
-	games_played?:number;
-	games_won?:number;
-	games_lost?:number;
-  }
+	games_played?: number;
+	games_won?: number;
+	games_lost?: number;
+}
 
 interface SetPlayerModalProps {
-	onSetPlayer: (player: number, username: string, data:UserProfile) => void;
+	onSetPlayer: (player: number, username: string, data: UserProfile) => void;
 	playerNum: number;
 }
 
@@ -24,22 +24,21 @@ const SetPlayerModal: React.FC<SetPlayerModalProps> = ({
 	const [playerName, setPlayerName] = useState<string>("");
 	const [error, setError] = useState<string | null>(null);
 
-  const { data } = useQuery(QUERY_USER, {
-    variables: { username: playerName }, // Pass the username as a variable
-    onError: () => {
-      setError("An error occurred while searching for the user.");
-    },
-  });
+	const { data } = useQuery(QUERY_USER, {
+		variables: { username: playerName }, // Pass the username as a variable
+		onError: () => {
+			setError("An error occurred while searching for the user.");
+		},
+	});
 
-  useEffect(() => {
-    console.log(data);
-    if (data && data.user) {
-      onSetPlayer(playerNum, playerName,data.user); // Call the parent function if user exists
-      setError("User found!");
-    } else if (data && !data.user) {
-      setError("User not found. Please try a different username.");
-    }
-  }, [data]);
+	useEffect(() => {
+		if (data && data.user) {
+			onSetPlayer(playerNum, playerName, data.user); // Call the parent function if user exists
+			setError("User found!");
+		} else if (data && !data.user) {
+			setError("User not found. Please try a different username.");
+		}
+	}, [data]);
 
 	return (
 		<div className="">
