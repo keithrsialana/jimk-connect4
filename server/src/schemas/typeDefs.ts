@@ -26,6 +26,15 @@ const typeDefs = `
     games_won: Int   
     games_lost: Int 
   }
+
+    input UpdateGameStats {
+    _id: ID
+    username:String
+    email: String
+    games_played: Int
+    games_won: Int
+    games_lost: Int
+  }
     
   
   type Auth {
@@ -43,6 +52,8 @@ const typeDefs = `
     addUser(input: UserInput!): Auth
     login(email: String!, password: String!): Auth
     updateUser(input: UpdateUser): User
+    updateGameStats(input: UpdateGameStats): User
+    deleteUser(userId: ID!):User
   }
 `;
 

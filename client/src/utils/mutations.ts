@@ -36,3 +36,25 @@ export const UPDATE_USER = gql`
     }
   }
 `;
+
+export const DELETE_USER = gql`
+  mutation deleteUser($userId: ID!) {
+    deleteUser(userId: $userId) {
+      _id
+      username
+    }
+  }
+`;
+
+export const UPDATE_GAME_STATS = gql`
+  mutation updateGameStats($input: UpdateGameStats!) {
+    updateGameStats(input: $input) {
+      _id
+      username
+      email
+      games_played
+      games_won
+      games_lost
+    }
+  }
+`;

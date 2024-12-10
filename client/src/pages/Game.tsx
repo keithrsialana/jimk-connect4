@@ -1,11 +1,18 @@
-import GameBoard from "../components/Gameboards/SinglePlayerGameboard";
+import SinglePlayerGameBoard from "../components/GameBoards/SinglePlayerGameboard";
+import MultiplayerGameBoard from "../components/GameBoards/MultiplayerGameBoard";
+import { useParams } from "react-router-dom";
 
 const Game = () => {
+    const { roomId } = useParams();
 
     return (
         <div>
-            <GameBoard />
-        </div>
+      {roomId ? (
+        <MultiplayerGameBoard />
+      ) : (
+        <SinglePlayerGameBoard />
+      )}
+    </div>
     )
 
 };
