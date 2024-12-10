@@ -1,11 +1,29 @@
 import React, { useEffect, useState } from "react";
 import WinnerModal from "../WinnerModal";
 import SetPlayerModal from "../SetPlayerModal";
+import { useMutation } from "@apollo/client";
+import { UPDATE_GAME_STATS } from "../utils/mutations"; // Ensure this mutation is imported
+
+// Define the input type for the update
+interface UserProfile {
+  _id?: number;
+  username?: string;
+  email?: string;
+  games_played?: number;
+  games_won?: number;
+  games_lost?: number;
+}
+
 
 const SinglePlayerGameBoard: React.FC = () => {
 	const [gamestart, setGameStart] = useState<boolean>(false);
 	const [player1, setPlayer1] = useState<string>("");
 	const [player2, setPlayer2] = useState<string>("");
+	const [player1Profile, setPlayer1Profile] = useState<UserProfile>();
+	const [player2Profile, setPlayer2Profile] = useState<UserProfile>();
+  
+	// Game statistics
+	const [updateGameStats] = useMutation(UPDATE_GAME_STATS);
 
 	// standard connect 4 size
 	const rows: number = 6;
@@ -95,7 +113,45 @@ const SinglePlayerGameBoard: React.FC = () => {
 
 	const [winner, setWinner] = useState<string | null>(null);
 
-	const handleGameEnd = (winningPlayer: string) => {
+	const handleGameEnd = async (winningPlayer: string) => {
+		console.log("The winning player is: " + winningPlayer);
+	
+		// Ensure player profiles are available and valid
+		if (player1Profile && player2Profile) {
+			const updatePlayerStats = (playerProfile:any, isWinner:any) => {
+				const gamesPlayed = playerProfile.games_played + 1;
+				const gamesWon = isWinner ? playerProfile.games_won + 1 : playerProfile.games_won;
+				const gamesLost = isWinner ? playerProfile.games_lost : playerProfile.games_lost + 1;
+	
+				console.log(playerProfile._id);
+				return {
+					_id: playerProfile._id,
+					username: playerProfile.username,
+					email: playerProfile.email,
+					games_played: gamesPlayed,
+					games_won: gamesWon,
+					games_lost: gamesLost,
+				};
+			};
+	
+			const player1Stats = updatePlayerStats(player1Profile, winningPlayer === "Red");
+			const player2Stats = updatePlayerStats(player2Profile, winningPlayer === "Yellow");
+	
+			// Function to update player stats and handle errors
+			const updateStats = async (stats:any, playerNumber:any) => {
+				try {
+					await updateGameStats({ variables: { input: stats } });
+					alert(`Player ${playerNumber} profile updated successfully!`);
+				} catch (error: any) {
+					console.error(error);
+					alert(`Error updating Player ${playerNumber}: ${error.graphQLErrors[0]?.message || error.message}`);
+				}
+			};
+	
+			// Update both players' stats
+			await updateStats(player1Stats, 1);
+			await updateStats(player2Stats, 2);
+		}
 		setWinner(winningPlayer);
 	};
 
@@ -104,12 +160,20 @@ const SinglePlayerGameBoard: React.FC = () => {
 		resetGame();
 	};
 
-	const handleSetPlayer = (player:number, username:string) => {
-		if (player == 1)
-			setPlayer1(username);
-		else if (player == 2)
-			setPlayer2(username);
-	}
+
+	const handleSetPlayer = (
+		player: number,
+		username: string,
+		playerProfile: UserProfile
+	  ) => {
+		if (player == 1) {
+		  setPlayer1(username);
+		  setPlayer1Profile(playerProfile);
+		} else if (player == 2) {
+		  setPlayer2(username);
+		  setPlayer2Profile(playerProfile);
+		}
+	  };
 
 	useEffect(() => {
 		// if both players are set, start the game
@@ -139,7 +203,7 @@ const SinglePlayerGameBoard: React.FC = () => {
 					<button className="btn btn-danger" onClick={resetGame}>
 						Restart Game
 					</button>
-					<WinnerModal winner={winner} onClose={handleCloseWinnerModal} />
+					<WinnerModal winner={winner} playerName={winner == "Red" ? player1 : player2} onClose={handleCloseWinnerModal} />
 				</div>
 			) : (
 				<>
