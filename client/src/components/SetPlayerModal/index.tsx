@@ -2,8 +2,18 @@ import React, { useEffect, useState } from "react";
 import { useQuery } from "@apollo/client";
 import { QUERY_USER } from "../../utils/queries";
 
+// Define the input type for the update
+interface UserProfile {
+	username?: string;
+	email?: string;
+	password?: string;
+	games_played?:number;
+	games_won?:number;
+	games_lost?:number;
+  }
+
 interface SetPlayerModalProps {
-	onSetPlayer: (player: number, username: string) => void;
+	onSetPlayer: (player: number, username: string, data:UserProfile) => void;
 	playerNum: number;
 }
 
@@ -24,7 +34,7 @@ const SetPlayerModal: React.FC<SetPlayerModalProps> = ({
   useEffect(() => {
     console.log(data);
     if (data && data.user) {
-      onSetPlayer(playerNum, playerName); // Call the parent function if user exists
+      onSetPlayer(playerNum, playerName,data.user); // Call the parent function if user exists
       setError("User found!");
     } else if (data && !data.user) {
       setError("User not found. Please try a different username.");
