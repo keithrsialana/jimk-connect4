@@ -172,7 +172,7 @@ const MultiplayerGameBoard: React.FC = () => {
 	const resetGame = () => {
 		// clear game board
 		setBoard(Array.from({ length: rows }, () => Array(cols).fill(null)));
-		setCurrentPlayer("Red");
+		// setCurrentPlayer("Red");
 	};
 
 	const [winner, setWinner] = useState<string | null>(null);
@@ -183,7 +183,7 @@ const MultiplayerGameBoard: React.FC = () => {
 
 	const handleCloseModal = () => {
 		setWinner(null);
-		resetGame();
+    resetGame();
 	};
 
 	return (
@@ -207,9 +207,6 @@ const MultiplayerGameBoard: React.FC = () => {
 						))
 					)}
 				</div>
-				<button className="btn btn-danger" onClick={resetGame}>
-					Restart Game
-				</button>
 				<WinnerModal
 					winner={winner}
 					playerName={winner == "Red" ? roomUsernames[0] : roomUsernames[1]}

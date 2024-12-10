@@ -207,10 +207,12 @@ const startApolloServer = async () => {
 
 						if (checkWinCondition(room.board, player)) {
 							io.to(roomId).emit("gameOver", player); // Notify players of the game over
+              room.board = Array(6)
+              .fill(null)
+              .map(() => Array(7).fill(null));
 						} else {
 							room.currentPlayer = player === "Red" ? "Yellow" : "Red"; // Switch to the next player
 							io.to(roomId).emit("playerTurn", room.currentPlayer);
-							console.log(`current player turn: ${room.currentPlayer}`);
 						}
 						break;
 					}
