@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import WinnerModal from "./WinnerModal";
+import WinnerModal from "../WinnerModal";
 
 const GameBoard: React.FC = () => {
 	// standard connect 4 size

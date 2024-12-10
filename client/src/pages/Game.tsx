@@ -1,4 +1,4 @@
-import GameBoard from "../components/Gameboard";
+import GameBoard from "../components/Gameboards/SinglePlayerGameboard";
 
 const Game = () => {
 
