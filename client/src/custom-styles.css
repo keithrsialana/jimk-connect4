@@ -57,11 +57,59 @@ body {
 	border-top-right-radius: 15px;
 }
 
+.in-game-profile-p1 {
+	border: 1px solid var(--primary) !important;
+	border-radius: 15px 15px;
+	background-color: #2b2b4f;
+	display: flex;
+	width: 300px;
+	flex-direction: column;
+	box-shadow: 0 15px 13px rgba(0, 0, 0, 0.2);
+	justify-content: center;
+}
+
+.in-game-profile-p2 {
+	border: 1px solid var(--primary) !important;
+	border-radius: 15px 15px;
+	background-color: #2b2b4f;
+	display: flex;
+	width: 300px;
+	flex-direction: column;
+	box-shadow: 0 15px 13px rgba(0, 0, 0, 0.2);
+	justify-content: center;
+}
+
+.card-title-p1 {
+	background-color: red;
+	padding-top: .5rem;
+	padding-bottom: .5rem;
+	border-top-left-radius: 15px;
+	border-top-right-radius: 15px;
+	display: flex;
+}
+
+.card-title-p2 {
+	background-color: yellow;
+	color: black;
+	padding-top: .5rem;
+	padding-bottom: .5rem;
+	border-top-left-radius: 15px;
+	border-top-right-radius: 15px;
+	display: flex;
+}
+
 .card-items {
 	margin: 1rem;
 	align-items: center;
 	justify-content: center;
+}
 
+.igp-card-items {
+	display: flex;
+	margin: 1rem;
+	align-items: center;
+	width: max-content;
+	/* justify-content: center; */
 }
 
 .input {

@@ -70,7 +70,7 @@ const SinglePlayerGameBoard: React.FC = () => {
 
 						chip.style.left = `${cellRect.left - gameBoardRect.left}px`; // Horizontal alignment
 
-						const gameContainer = document.querySelector(".game-container");
+						const gameContainer = document.querySelector(".game-board");
 						if (gameContainer) {
 							gameContainer.appendChild(chip);
 
@@ -232,26 +232,50 @@ const SinglePlayerGameBoard: React.FC = () => {
 	return (
 		<>
 			{gamestart ? (
-				<div className="game-container">
-					<div className="mt-3">
-						Current Player:{" "}
-						<span className={currentPlayer.toLowerCase()}>{currentPlayer == "Red" ? player1 : player2}</span>
+				<div>
+					<div>
+						<h1 className="current-move">
+							Current Move:{" "}
+							<span className={currentPlayer.toLowerCase()}>{currentPlayer == "Red" ? player1 : player2}</span>
+						</h1>
 					</div>
-					<div className="game-board">
-						{board.map((row, r) =>
-							row.map((cell, c) => (
-								<div
-									key={`${r}-${c}`}
-									className={`cell ${cell?.toLowerCase() || ""}`}
-									onClick={() => handleMove(c)}
-								></div>
-							))
-						)}
+					<div className="game-container">
+						<div className="in-game-profile-p1">
+								<div className="card-title-p1">
+									<h3 className="igp-card-items">{player1Profile ? player1Profile.username : "player 1 profile not found"}</h3>
+								</div>
+								<p className="igp-card-items">Games Played: {player1Profile ? player1Profile.games_played : ""}</p>
+								<p className="igp-card-items">Wins: {player1Profile ? player1Profile.games_won : ""}</p>
+								<p className="igp-card-items">Losses: {player1Profile ? player1Profile.games_lost : ""}</p>
+							</div>
+						<div>
+							<div className="game-board">
+								{board.map((row, r) =>
+									row.map((cell, c) => (
+										<div
+											key={`${r}-${c}`}
+											className={`cell ${cell?.toLowerCase() || ""}`}
+											onClick={() => handleMove(c)}
+										></div>
+									))
+								)}
+							</div>
+							<button className="btn btn-danger button-margin" onClick={resetGame}>
+								Restart Game
+							</button>
+							<WinnerModal winner={winner} playerName={winner == "Red" ? player1 : player2} onClose={handleCloseWinnerModal} />
+						</div>
+						<div>
+							<div className="in-game-profile-p2">
+								<div className="card-title-p2">
+									<h3 className="igp-card-items">{player2Profile ? player2Profile.username : "player 2 profile not found"}</h3>
+								</div>
+								<p className="igp-card-items">Games Played: {player2Profile ? player2Profile.games_played : ""}</p>
+								<p className="igp-card-items">Wins: {player2Profile ? player2Profile.games_won : ""}</p>
+								<p className="igp-card-items">Losses: {player2Profile ? player2Profile.games_lost : ""}</p>
+							</div>
+						</div>
 					</div>
-					<button className="btn btn-danger button-margin" onClick={resetGame}>
-						Restart Game
-					</button>
-					<WinnerModal winner={winner} playerName={winner == "Red" ? player1 : player2} onClose={handleCloseWinnerModal} />
 				</div>
 			) : (
 				<>
