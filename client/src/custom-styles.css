@@ -61,8 +61,8 @@ body {
 	border: 1px solid var(--primary) !important;
 	border-radius: 15px 15px;
 	background-color: #2b2b4f;
-	margin: 2rem;
 	display: flex;
+	width: 300px;
 	flex-direction: column;
 	box-shadow: 0 15px 13px rgba(0, 0, 0, 0.2);
 	justify-content: center;
@@ -72,8 +72,8 @@ body {
 	border: 1px solid var(--primary) !important;
 	border-radius: 15px 15px;
 	background-color: #2b2b4f;
-	margin: 2rem;
 	display: flex;
+	width: 300px;
 	flex-direction: column;
 	box-shadow: 0 15px 13px rgba(0, 0, 0, 0.2);
 	justify-content: center;
