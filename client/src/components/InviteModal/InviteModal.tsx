@@ -22,7 +22,6 @@ const InviteModal: React.FC<InviteModalProps> = ({ isOpen, onClose }) => {
 		const myUsername = Auth.getProfile().data.username;
 		event.preventDefault();
 		// Handle the invite Code submission (e.g., send it to a server or copy to clipboard)
-		console.log("Invite Code:", inviteCode);
 		socket?.emit('joinRoom', inviteCode, myUsername);
 		onClose(); // Close the modal after submission
 	};

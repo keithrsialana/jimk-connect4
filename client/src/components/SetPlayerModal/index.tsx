@@ -32,7 +32,6 @@ const SetPlayerModal: React.FC<SetPlayerModalProps> = ({
 	});
 
 	useEffect(() => {
-		console.log(data);
 		if (data && data.user) {
 			onSetPlayer(playerNum, playerName, data.user); // Call the parent function if user exists
 			setError("User found!");

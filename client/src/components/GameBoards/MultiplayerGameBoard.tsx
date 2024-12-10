@@ -20,17 +20,6 @@ const MultiplayerGameBoard: React.FC = () => {
 	const [isMyTurn, setIsMyTurn] = useState<boolean>(false);
 	const [players, setPlayers] = useState<string[]>([]);
 	const [roomUsernames, setUsernames] = useState<string[]>([]);
-	// const [inviteCode, setInviteCode] = useState<string>("");
-
-	useEffect(() => {
-		console.log("Players updated:", players);
-	}, [players]);
-	useEffect(() => {
-		console.log("Is my turn updated:", isMyTurn);
-	}, [isMyTurn]);
-	useEffect(() => {
-		console.log("User names updated:", roomUsernames);
-	}, [roomUsernames]);
 
 	useEffect(() => {
 		socket?.on(
@@ -52,7 +41,6 @@ const MultiplayerGameBoard: React.FC = () => {
 		socket?.on("startGame", () => {
 			// Determine if it's the player's turn based on their ID
 			setCurrentPlayer("Red");
-			console.log("game started");
 		});
 
 		socket?.on("updateBoard", (newBoard) => {
@@ -111,7 +99,6 @@ const MultiplayerGameBoard: React.FC = () => {
 								nextPlayerSocketId === players[0] ? "Red" : "Yellow"
 							);
 							setIsMyTurn(nextPlayerSocketId === socket?.id);
-							console.log(`current player: ${nextPlayerSocketId}`);
 						}
 					}, 100);
 
