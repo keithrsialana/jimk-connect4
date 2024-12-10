@@ -2,8 +2,8 @@ import React, { useState, useEffect } from "react";
 import WinnerModal from "../WinnerModal";
 import { useSocket } from "../../context/SocketContext";
 import { useParams } from "react-router-dom";
-import { useQuery } from "@apollo/client";
-import { QUERY_USER } from "../../utils/queries";
+// import { useQuery } from "@apollo/client";
+// import { QUERY_USER } from "../../utils/queries";
 
 const MultiplayerGameBoard: React.FC = () => {
 	const socket = useSocket();
@@ -20,6 +20,8 @@ const MultiplayerGameBoard: React.FC = () => {
 	const [isMyTurn, setIsMyTurn] = useState<boolean>(false);
 	const [players, setPlayers] = useState<string[]>([]);
 	const [roomUsernames, setUsernames] = useState<string[]>([]);
+  const [player1, setPlayer1] = useState<string>("");
+  const [player2, setPlayer2] = useState<string>("");
 
 	useEffect(() => {
 		console.log("Players updated:", players);
@@ -30,15 +32,18 @@ const MultiplayerGameBoard: React.FC = () => {
 	useEffect(() => {
 		console.log("User names updated:", roomUsernames);
 	}, [roomUsernames]);
-
+  useEffect(() => {
+    console.log("Player 1:", player1);
+    console.log("Player 2:", player2);
+  }, [player1, player2]);
   // for debugging
-  const getUser = async (username:string) => {
-    const { data } = await useQuery(QUERY_USER, {
-      variables: { username },
-    });
-    if (data)
-      console.log(data.user);
-  }
+  // const getUser = async (username:string) => {
+  //   const { data } = await useQuery(QUERY_USER, {
+  //     variables: { username },
+  //   });
+  //   if (data)
+  //     console.log(data.user);
+  // }
   
 	useEffect(() => {
     socket?.on("roomData", ({ players, currentPlayer, usernames }) => {
@@ -47,11 +52,13 @@ const MultiplayerGameBoard: React.FC = () => {
 				"Room Data has been recieved: " + [players, currentPlayer, usernames]
 			);
 
-      getUser(usernames[0]);
+      // getUser(usernames[0]);
 
-      if (usernames[1])
-        getUser(usernames[1]);
 
+      // if (usernames[1])
+      //   getUser(usernames[1]);
+      setPlayer1(usernames[0]);
+      setPlayer2(usernames[1]);
 			setPlayers(players); // Update the players in the room
 			setCurrentPlayer(currentPlayer); // Set the current player
 			setUsernames(usernames);
