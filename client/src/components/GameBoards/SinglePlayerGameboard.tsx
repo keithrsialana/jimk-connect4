@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import WinnerModal from "../WinnerModal";
 import SetPlayerModal from "../SetPlayerModal";
 import { useMutation } from "@apollo/client";
-import { UPDATE_GAME_STATS } from "../utils/mutations"; // Ensure this mutation is imported
+import { UPDATE_GAME_STATS } from "../../utils/mutations"; // Ensure this mutation is imported
 
 // Define the input type for the update
 interface UserProfile {
@@ -13,7 +13,6 @@ interface UserProfile {
   games_won?: number;
   games_lost?: number;
 }
-
 
 const SinglePlayerGameBoard: React.FC = () => {
 	const [gamestart, setGameStart] = useState<boolean>(false);

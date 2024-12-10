@@ -189,7 +189,7 @@ const MultiplayerGameBoard: React.FC = () => {
       <button className="btn btn-danger" onClick={resetGame}>
         Restart Game
       </button>
-      <WinnerModal winner={winner} onClose={handleCloseModal} />
+      <WinnerModal winner={winner} playerName={/*NEEDS SOMETHING HERE*/} onClose={handleCloseModal} />
     </div>
   );
 };
