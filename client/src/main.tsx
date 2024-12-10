@@ -1,6 +1,6 @@
 import ReactDOM from 'react-dom/client'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
-
+import { SocketProvider } from "./context/SocketContext.js";
 
 import App from './App.jsx';
 import Home from './pages/Home';
@@ -22,6 +22,10 @@ const router = createBrowserRouter([
       }, {
         path: '/game',
         element: <Game />
+      },
+      {
+        path: '/game/:roomId',
+        element: <Game />
       }, {
         path: '/login',
         element: <Login />
@@ -41,5 +45,8 @@ const router = createBrowserRouter([
 
 const rootElement = document.getElementById('root');
 if (rootElement) {
-  ReactDOM.createRoot(rootElement).render(<RouterProvider router={router} />);
+  ReactDOM.createRoot(rootElement).render(
+  <SocketProvider>
+    <RouterProvider router={router} />
+  </SocketProvider>);
 }
