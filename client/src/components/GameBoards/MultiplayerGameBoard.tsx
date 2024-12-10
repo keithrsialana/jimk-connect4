@@ -70,11 +70,9 @@ const MultiplayerGameBoard: React.FC = () => {
 			setIsMyTurn(nextPlayer); // Update turn state based on the next player
 		});
 
-		socket?.on("startGame", ({ players }) => {
+		socket?.on("startGame", () => {
 			// Determine if it's the player's turn based on their ID
-			const playerColor = players[0] === socket.id ? "Red" : "Yellow";
-			setCurrentPlayer(playerColor);
-			setIsMyTurn(playerColor == "Red"); // The creator is Red
+			setCurrentPlayer("Red");
 			console.log("game started");
 		});
 
