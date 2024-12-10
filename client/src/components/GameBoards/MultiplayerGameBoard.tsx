@@ -20,8 +20,7 @@ const MultiplayerGameBoard: React.FC = () => {
 	const [isMyTurn, setIsMyTurn] = useState<boolean>(false);
 	const [players, setPlayers] = useState<string[]>([]);
 	const [roomUsernames, setUsernames] = useState<string[]>([]);
-  const [player1, setPlayer1] = useState<string>("");
-  const [player2, setPlayer2] = useState<string>("");
+	// const [inviteCode, setInviteCode] = useState<string>("");
 
 	useEffect(() => {
 		console.log("Players updated:", players);
@@ -32,38 +31,18 @@ const MultiplayerGameBoard: React.FC = () => {
 	useEffect(() => {
 		console.log("User names updated:", roomUsernames);
 	}, [roomUsernames]);
-  useEffect(() => {
-    console.log("Player 1:", player1);
-    console.log("Player 2:", player2);
-  }, [player1, player2]);
-  // for debugging
-  // const getUser = async (username:string) => {
-  //   const { data } = await useQuery(QUERY_USER, {
-  //     variables: { username },
-  //   });
-  //   if (data)
-  //     console.log(data.user);
-  // }
-  
+
 	useEffect(() => {
-    socket?.on("roomData", ({ players, currentPlayer, usernames }) => {
-			// for debugging
-      console.log(
-				"Room Data has been recieved: " + [players, currentPlayer, usernames]
-			);
-
-      // getUser(usernames[0]);
-
-
-      // if (usernames[1])
-      //   getUser(usernames[1]);
-      setPlayer1(usernames[0]);
-      setPlayer2(usernames[1]);
-			setPlayers(players); // Update the players in the room
-			setCurrentPlayer(currentPlayer); // Set the current player
-			setUsernames(usernames);
-			setIsMyTurn(socket.id === players[0]); // first player is "Red"
-		});
+		socket?.on(
+			"roomData",
+			({ players, currentPlayer, usernames }) => {
+				// setInviteCode(inviteCode);
+				setPlayers(players); // Update the players in the room
+				setCurrentPlayer(currentPlayer); // Set the current player
+				setUsernames(usernames);
+				setIsMyTurn(socket.id === players[0]); // first player is "Red"
+			}
+		);
 
 		socket?.on("playerTurn", (nextPlayer) => {
 			setCurrentPlayer(nextPlayer); // Update the current player
@@ -208,33 +187,36 @@ const MultiplayerGameBoard: React.FC = () => {
 	};
 
 	return (
-		<div className="game-container">
-			<div>
-				Current Player:{" "}
-				<span className={currentPlayer.toLowerCase()}>
-					{currentPlayer == "Red" ? roomUsernames[0] : roomUsernames[1]}
-				</span>
+		<>
+			<div className="text-center" ><h1>Invite Code: {roomId}</h1></div>
+			<div className="game-container">
+				<div>
+					Current Player:{" "}
+					<span className={currentPlayer.toLowerCase()}>
+						{currentPlayer == "Red" ? roomUsernames[0] : roomUsernames[1]}
+					</span>
+				</div>
+				<div className="game-board">
+					{board.map((row, r) =>
+						row.map((cell, c) => (
+							<div
+								key={`${r}-${c}`}
+								className={`cell ${cell?.toLowerCase() || ""}`}
+								onClick={() => handleMove(c)}
+							></div>
+						))
+					)}
+				</div>
+				<button className="btn btn-danger" onClick={resetGame}>
+					Restart Game
+				</button>
+				<WinnerModal
+					winner={winner}
+					playerName={winner == "Red" ? roomUsernames[0] : roomUsernames[1]}
+					onClose={handleCloseModal}
+				/>
 			</div>
-			<div className="game-board">
-				{board.map((row, r) =>
-					row.map((cell, c) => (
-						<div
-							key={`${r}-${c}`}
-							className={`cell ${cell?.toLowerCase() || ""}`}
-							onClick={() => handleMove(c)}
-						></div>
-					))
-				)}
-			</div>
-			<button className="btn btn-danger" onClick={resetGame}>
-				Restart Game
-			</button>
-			<WinnerModal
-				winner={winner}
-				playerName={winner == "Red" ? roomUsernames[0] : roomUsernames[1]}
-				onClose={handleCloseModal}
-			/>
-		</div>
+		</>
 	);
 };
 

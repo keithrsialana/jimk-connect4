@@ -137,12 +137,12 @@ const startApolloServer = async () => {
 
 		// Handle creating a room with a unique ID
 		socket.on("createRoom", (hostUsername) => {
-			const roomId = uuidv4();
-			const inviteCode = generateInviteCode();
+			const inviteCode = uuidv4();
+			const roomId = generateInviteCode();
 			rooms[roomId] = {
 				players: [socket.id],
 				usernames: [hostUsername],
-				inviteCode,
+				roomId,
 				turn: "Red",
 				board: Array(6)
 					.fill(null)
@@ -151,12 +151,12 @@ const startApolloServer = async () => {
 			};
 			socket.join(roomId);
 			socket.emit("roomCreated", { roomId, inviteCode });
-			console.log(`Room created: ${roomId} with invite code: ${inviteCode}`);
+			console.log(`Room created: ${roomId} with invite code: ${roomId}`);
 		});
 
 		socket.on("joinRoom", (inviteCode, myUsername) => {
 			const roomId = Object.keys(rooms).find(
-				(roomId) => rooms[roomId].inviteCode === inviteCode
+				(roomId) => rooms[roomId].roomId === inviteCode
 			);
 			if (roomId) {
 				socket.join(roomId);
@@ -172,11 +172,11 @@ const startApolloServer = async () => {
 						usernames: rooms[roomId].usernames,
 						players: rooms[roomId].players,
 						currentPlayer: rooms[roomId].currentPlayer,
+            inviteCode
 					});
 				}, 1000);
 
 				socket.emit("roomJoined", { roomId });
-				// io.to(roomId).emit("playerJoined", { playerId: socket.id });
 
 				if (rooms[roomId].players.length === 2) {
 					// Emit start game event to all players in the room
