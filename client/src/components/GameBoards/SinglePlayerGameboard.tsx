@@ -6,13 +6,14 @@ import { UPDATE_GAME_STATS } from "../../utils/mutations"; // Ensure this mutati
 
 // Define the input type for the update
 interface UserProfile {
-  _id?: number;
-  username?: string;
-  email?: string;
-  games_played?: number;
-  games_won?: number;
-  games_lost?: number;
+	_id?: number;
+	username?: string;
+	email?: string;
+	games_played?: number;
+	games_won?: number;
+	games_lost?: number;
 }
+
 
 const SinglePlayerGameBoard: React.FC = () => {
 	const [gamestart, setGameStart] = useState<boolean>(false);
@@ -20,7 +21,8 @@ const SinglePlayerGameBoard: React.FC = () => {
 	const [player2, setPlayer2] = useState<string>("");
 	const [player1Profile, setPlayer1Profile] = useState<UserProfile>();
 	const [player2Profile, setPlayer2Profile] = useState<UserProfile>();
-  
+	const [isMoveInProgress, setIsMoveInProgress] = useState(false);
+
 	// Game statistics
 	const [updateGameStats] = useMutation(UPDATE_GAME_STATS);
 
@@ -33,24 +35,71 @@ const SinglePlayerGameBoard: React.FC = () => {
 	);
 	const [currentPlayer, setCurrentPlayer] = useState<"Red" | "Yellow">("Red");
 
+	function highlightColumn(colIndex: number, add: boolean): void {
+		const cells = document.querySelectorAll(".cell");
+		cells.forEach((cell, index) => {
+			if (index % 7 === colIndex) { // Assuming 7 columns
+				add ? cell.classList.add("highlight") : cell.classList.remove("highlight");
+			}
+		});
+	}
+
+	document.querySelectorAll(".cell").forEach((cell, index) => {
+		const col = index % 7; // Get column index
+		cell.addEventListener("mouseenter", () => highlightColumn(col, true));
+		cell.addEventListener("mouseleave", () => highlightColumn(col, false));
+	});
+
 	function handleMove(col: number): void {
 		// finds lowest available row
+		if (isMoveInProgress || winner) return;
 		for (let r = rows - 1; r >= 0; r--) {
 			if (!board[r][col]) {
-				board[r][col] = currentPlayer;
-				const newBoard = board.map((row) => [...row]);
-				newBoard[r][col] = currentPlayer;
-				setBoard(newBoard);
+				// board[r][col] = currentPlayer;
+				const cell = document.querySelector(
+					`.game-board .cell:nth-child(${r * cols + col + 1})`
+				);
+				if (cell) {
+					const chip = document.createElement("div");
+					chip.className = `chip ${currentPlayer.toLowerCase()}`;
 
-				setTimeout(() => {
-					if (checkWinner(newBoard, r, col)) {
-						handleGameEnd(`${currentPlayer}`);
-						// switches player
-					} else {
-						setCurrentPlayer(currentPlayer === "Red" ? "Yellow" : "Red");
+					const gameBoard = document.querySelector(".game-board");
+					if (gameBoard) {
+						const gameBoardRect = gameBoard.getBoundingClientRect();
+						const cellRect = (cell as HTMLElement).getBoundingClientRect();
+
+						chip.style.left = `${cellRect.left - gameBoardRect.left}px`; // Horizontal alignment
+
+						const gameContainer = document.querySelector(".game-container");
+						if (gameContainer) {
+							gameContainer.appendChild(chip);
+
+							setIsMoveInProgress(true);
+							setTimeout(() => {
+								chip.style.top = `${cellRect.top - gameBoardRect.top}px`; // Move to the correct row
+								chip.style.left = `${cellRect.left - gameBoardRect.left}px`; // Align horizontally
+							}, 0);
+
+							chip.addEventListener("animationend", () => {
+								gameContainer.removeChild(chip);
+
+								const newBoard = board.map((row) => [...row]);
+								newBoard[r][col] = currentPlayer;
+								setBoard(newBoard);
+
+								setTimeout(() => {
+									if (checkWinner(newBoard, r, col)) {
+										handleGameEnd(`${currentPlayer}`);
+										// switches player
+									} else {
+										setCurrentPlayer(currentPlayer === "Red" ? "Yellow" : "Red");
+									}
+									setIsMoveInProgress(false);
+								}, 100);
+							});
+						}
 					}
-				}, 100);
-
+				}
 				return;
 			}
 		}
@@ -114,14 +163,14 @@ const SinglePlayerGameBoard: React.FC = () => {
 
 	const handleGameEnd = async (winningPlayer: string) => {
 		console.log("The winning player is: " + winningPlayer);
-	
+
 		// Ensure player profiles are available and valid
 		if (player1Profile && player2Profile) {
-			const updatePlayerStats = (playerProfile:any, isWinner:any) => {
+			const updatePlayerStats = (playerProfile: any, isWinner: any) => {
 				const gamesPlayed = playerProfile.games_played + 1;
 				const gamesWon = isWinner ? playerProfile.games_won + 1 : playerProfile.games_won;
 				const gamesLost = isWinner ? playerProfile.games_lost : playerProfile.games_lost + 1;
-	
+
 				console.log(playerProfile._id);
 				return {
 					_id: playerProfile._id,
@@ -132,12 +181,12 @@ const SinglePlayerGameBoard: React.FC = () => {
 					games_lost: gamesLost,
 				};
 			};
-	
+
 			const player1Stats = updatePlayerStats(player1Profile, winningPlayer === "Red");
 			const player2Stats = updatePlayerStats(player2Profile, winningPlayer === "Yellow");
-	
+
 			// Function to update player stats and handle errors
-			const updateStats = async (stats:any, playerNumber:any) => {
+			const updateStats = async (stats: any, playerNumber: any) => {
 				try {
 					await updateGameStats({ variables: { input: stats } });
 					alert(`Player ${playerNumber} profile updated successfully!`);
@@ -146,7 +195,7 @@ const SinglePlayerGameBoard: React.FC = () => {
 					alert(`Error updating Player ${playerNumber}: ${error.graphQLErrors[0]?.message || error.message}`);
 				}
 			};
-	
+
 			// Update both players' stats
 			await updateStats(player1Stats, 1);
 			await updateStats(player2Stats, 2);
@@ -164,27 +213,27 @@ const SinglePlayerGameBoard: React.FC = () => {
 		player: number,
 		username: string,
 		playerProfile: UserProfile
-	  ) => {
+	) => {
 		if (player == 1) {
-		  setPlayer1(username);
-		  setPlayer1Profile(playerProfile);
+			setPlayer1(username);
+			setPlayer1Profile(playerProfile);
 		} else if (player == 2) {
-		  setPlayer2(username);
-		  setPlayer2Profile(playerProfile);
+			setPlayer2(username);
+			setPlayer2Profile(playerProfile);
 		}
-	  };
+	};
 
 	useEffect(() => {
 		// if both players are set, start the game
 		if (player1 && player2)
 			setGameStart(true);
-	},[player1,player2]);
+	}, [player1, player2]);
 
 	return (
 		<>
 			{gamestart ? (
 				<div className="game-container">
-					<div>
+					<div className="mt-3">
 						Current Player:{" "}
 						<span className={currentPlayer.toLowerCase()}>{currentPlayer == "Red" ? player1 : player2}</span>
 					</div>
@@ -199,7 +248,7 @@ const SinglePlayerGameBoard: React.FC = () => {
 							))
 						)}
 					</div>
-					<button className="btn btn-danger" onClick={resetGame}>
+					<button className="btn btn-danger button-margin" onClick={resetGame}>
 						Restart Game
 					</button>
 					<WinnerModal winner={winner} playerName={winner == "Red" ? player1 : player2} onClose={handleCloseWinnerModal} />
