@@ -13,8 +13,23 @@ const GameBoard: React.FC = () => {
 	const [isMoveInProgress, setIsMoveInProgress] = useState(false);
 	const [winner, setWinner] = useState<string | null>(null);
 
+	function highlightColumn(colIndex: number, add: boolean): void {
+		const cells = document.querySelectorAll(".cell");
+		cells.forEach((cell, index) => {
+			if (index % 7 === colIndex) { // Assuming 7 columns
+				add ? cell.classList.add("highlight") : cell.classList.remove("highlight");
+			}
+		});
+	}
+
+	document.querySelectorAll(".cell").forEach((cell, index) => {
+		const col = index % 7; // Get column index
+		cell.addEventListener("mouseenter", () => highlightColumn(col, true));
+		cell.addEventListener("mouseleave", () => highlightColumn(col, false));
+	});
+
 	function handleMove(col: number): void {
-		if (isMoveInProgress || winner) return; 
+		if (isMoveInProgress || winner) return;
 		for (let r = rows - 1; r >= 0; r--) {
 			if (!board[r][col]) {
 				const cell = document.querySelector(
@@ -23,31 +38,31 @@ const GameBoard: React.FC = () => {
 				if (cell) {
 					const chip = document.createElement("div");
 					chip.className = `chip ${currentPlayer.toLowerCase()}`;
-	
+
 					const gameBoard = document.querySelector(".game-board");
 					if (gameBoard) {
 						const gameBoardRect = gameBoard.getBoundingClientRect();
 						const cellRect = (cell as HTMLElement).getBoundingClientRect();
-	
+
 						chip.style.left = `${cellRect.left - gameBoardRect.left}px`; // Horizontal alignment
-	
+
 						const gameContainer = document.querySelector(".game-container");
 						if (gameContainer) {
 							gameContainer.appendChild(chip);
-	
+
 							setIsMoveInProgress(true);
 							setTimeout(() => {
 								chip.style.top = `${cellRect.top - gameBoardRect.top}px`; // Move to the correct row
 								chip.style.left = `${cellRect.left - gameBoardRect.left}px`; // Align horizontally
 							}, 0);
-	
+
 							chip.addEventListener("animationend", () => {
 								gameContainer.removeChild(chip);
-	
+
 								const newBoard = board.map((row) => [...row]);
 								newBoard[r][col] = currentPlayer;
 								setBoard(newBoard);
-	
+
 								if (checkWinner(newBoard, r, col)) {
 									handleGameEnd(`${currentPlayer}`);
 								} else {
