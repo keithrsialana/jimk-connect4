@@ -4,7 +4,7 @@ import Auth from "../../utils/auth";
 const Header = () => {
 
 	return (
-		<header className="header bg-primary-lighter text-light mb-4 py-3 flex-row align-center">
+		<header className="header bg-primary-lighter text-light mb-4 flex-row align-center">
 			<div className="container container-fluid flex-row justify-space-between-lg justify-center align-center">
 				<div>
 					<Link className="text-light" to="/">
