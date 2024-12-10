@@ -6,202 +6,236 @@ import { useParams } from "react-router-dom";
 // import { QUERY_USER } from "../../utils/queries";
 
 const MultiplayerGameBoard: React.FC = () => {
-	const socket = useSocket();
-	const { roomId } = useParams();
+  const socket = useSocket();
+  const { roomId } = useParams();
 
-	// standard connect 4 size
-	const rows: number = 6;
-	const cols: number = 7;
+  // standard connect 4 size
+  const rows: number = 6;
+  const cols: number = 7;
 
-	const [board, setBoard] = useState<(null | "Red" | "Yellow")[][]>(
-		Array.from({ length: rows }, () => Array(cols).fill(null))
-	);
-	const [currentPlayer, setCurrentPlayer] = useState<"Red" | "Yellow">("Red");
-	const [isMyTurn, setIsMyTurn] = useState<boolean>(false);
-	const [players, setPlayers] = useState<string[]>([]);
-	const [roomUsernames, setUsernames] = useState<string[]>([]);
+  const [board, setBoard] = useState<(null | "Red" | "Yellow")[][]>(
+    Array.from({ length: rows }, () => Array(cols).fill(null))
+  );
+  const [currentPlayer, setCurrentPlayer] = useState<"Red" | "Yellow">("Red");
+  const [isMyTurn, setIsMyTurn] = useState<boolean>(false);
+  const [players, setPlayers] = useState<string[]>([]);
+  const [roomUsernames, setUsernames] = useState<string[]>([]);
+  const [isMoveInProgress, setIsMoveInProgress] = useState(false);
 
-	useEffect(() => {
-		socket?.on(
-			"roomData",
-			({ players, currentPlayer, usernames }) => {
-				// setInviteCode(inviteCode);
-				setPlayers(players); // Update the players in the room
-				setCurrentPlayer(currentPlayer); // Set the current player
-				setUsernames(usernames);
-				setIsMyTurn(socket.id === players[0]); // first player is "Red"
-			}
-		);
+  useEffect(() => {
+    socket?.on("roomData", ({ players, currentPlayer, usernames }) => {
+      // setInviteCode(inviteCode);
+      setPlayers(players); // Update the players in the room
+      setCurrentPlayer(currentPlayer); // Set the current player
+      setUsernames(usernames);
+      setIsMyTurn(socket.id === players[0]); // first player is "Red"
+    });
 
-		socket?.on("playerTurn", (nextPlayer) => {
-			setCurrentPlayer(nextPlayer); // Update the current player
-			setIsMyTurn(nextPlayer); // Update turn state based on the next player
-		});
+    socket?.on("playerTurn", (nextPlayer) => {
+      setCurrentPlayer(nextPlayer); // Update the current player
+      setIsMyTurn(nextPlayer); // Update turn state based on the next player
+    });
 
-		socket?.on("startGame", () => {
-			// Determine if it's the player's turn based on their ID
-			setCurrentPlayer("Red");
-		});
+    socket?.on("startGame", () => {
+      // Determine if it's the player's turn based on their ID
+      setCurrentPlayer("Red");
+    });
 
-		socket?.on("updateBoard", (newBoard) => {
-			setBoard(newBoard); // Update the board with the new state from the server
-		});
+    socket?.on("updateBoard", (newBoard) => {
+      setBoard(newBoard); // Update the board with the new state from the server
+    });
 
-		socket?.on("notYourTurn", ({ message }) => {
-			alert(message); // Notify the player that it's not their turn
-		});
+    socket?.on("notYourTurn", ({ message }) => {
+      alert(message); // Notify the player that it's not their turn
+    });
 
-		socket?.on("gameOver", (winner) => {
-			setWinner(winner); // Set the winner state
-		});
+    socket?.on("gameOver", (winner) => {
+      setWinner(winner); // Set the winner state
+    });
 
-		return () => {
-			// socket?.off("roomData");
-			socket?.off("startGame");
-			socket?.off("updateBoard");
-			socket?.off("notYourTurn");
-			socket?.off("gameOver");
-			socket?.off("playerTurn");
-		};
-	}, [socket, roomId]);
+    return () => {
+      // socket?.off("roomData");
+      socket?.off("startGame");
+      socket?.off("updateBoard");
+      socket?.off("notYourTurn");
+      socket?.off("gameOver");
+      socket?.off("playerTurn");
+    };
+  }, [socket, roomId]);
 
-	function handleMove(col: number): void {
-		if (!isMyTurn) {
-			alert("NOT YOUR TURN");
-			return;
-		} else {
-			// finds lowest available row
-			for (let r = rows - 1; r >= 0; r--) {
-				if (!board[r][col]) {
-					// board[r][col] = currentPlayer;
-					const newBoard = board.map((row) => [...row]);
-					newBoard[r][col] = currentPlayer;
+  function handleMove(col: number): void {
+    if (!isMyTurn) {
+      alert("NOT YOUR TURN");
+      return;
+    } else {
+      // finds lowest available row
+      if (isMoveInProgress || winner) return;
+      for (let r = rows - 1; r >= 0; r--) {
+        if (!board[r][col]) {
+          // board[r][col] = currentPlayer;
+          const cell = document.querySelector(
+            `.game-board .cell:nth-child(${r * cols + col + 1})`
+          );
+          if (cell) {
+            const chip = document.createElement("div");
+            chip.className = `chip ${currentPlayer.toLowerCase()}`;
 
-					socket?.emit("makeMove", {
-						roomId,
-						column: col,
-						player: currentPlayer,
-					});
+            const gameBoard = document.querySelector(".game-board");
+            if (gameBoard) {
+              const gameBoardRect = gameBoard.getBoundingClientRect();
+              const cellRect = (cell as HTMLElement).getBoundingClientRect();
 
-					setBoard(newBoard);
+              chip.style.left = `${cellRect.left - gameBoardRect.left}px`; // Horizontal alignment
 
-					setTimeout(() => {
-						if (checkWinner(newBoard, r, col)) {
-							handleGameEnd(`${currentPlayer}`);
-							// switches player
-						} else {
-							const currentPlayerIndex = players.indexOf(String(socket?.id));
-							// Calculate the index of the next player
-							const nextPlayerIndex = (currentPlayerIndex + 1) % players.length;
-							const nextPlayerSocketId = players[nextPlayerIndex];
-							// Update the current player
-							setCurrentPlayer(
-								nextPlayerSocketId === players[0] ? "Red" : "Yellow"
-							);
-							setIsMyTurn(nextPlayerSocketId === socket?.id);
-						}
-					}, 100);
+              const gameContainer = document.querySelector(".game-board");
+              if (gameContainer) {
+                gameContainer.appendChild(chip);
 
-					return;
-				}
-			}
-		}
-		alert("Column is full");
-	}
+                setIsMoveInProgress(true);
+                setTimeout(() => {
+                  chip.style.top = `${cellRect.top - gameBoardRect.top}px`; // Move to the correct row
+                  chip.style.left = `${cellRect.left - gameBoardRect.left}px`; // Align horizontally
+                }, 0);
 
-	const checkWinner = (
-		board: (null | "Red" | "Yellow")[][],
-		row: number,
-		col: number
-	): boolean => {
-		const directions = [
-			{ dr: -1, dc: 0 }, // vertical
-			{ dr: 0, dc: 1 }, // horizontal
-			{ dr: -1, dc: 1 }, // diagonal right
-			{ dr: -1, dc: -1 }, // diagonal left
-		];
+                chip.addEventListener("animationend", () => {
+                  gameContainer.removeChild(chip);
+                  const newBoard = board.map((row) => [...row]);
+                  newBoard[r][col] = currentPlayer;
 
-		// loop to find 4 in a row
-		for (const { dr, dc } of directions) {
-			let count = 1;
-			count += countDirection(board, row, col, dr, dc);
-			count += countDirection(board, row, col, -dr, -dc);
-			if (count >= 4) return true;
-		}
-		return false;
-	};
+                  socket?.emit("makeMove", {
+                    roomId,
+                    column: col,
+                    player: currentPlayer,
+                  });
 
-	const countDirection = (
-		board: (null | "Red" | "Yellow")[][],
-		row: number,
-		col: number,
-		dr: number,
-		dc: number
-	): number => {
-		let r: number = row + dr;
-		let c: number = col + dc;
-		let count: number = 0;
+                  setBoard(newBoard);
 
-		while (
-			r >= 0 &&
-			r < rows &&
-			c >= 0 &&
-			c < cols &&
-			board[r][c] === currentPlayer
-		) {
-			count++;
-			r += dr;
-			c += dc;
-		}
-		return count;
-	};
+                  setTimeout(() => {
+                    if (checkWinner(newBoard, r, col)) {
+                      handleGameEnd(`${currentPlayer}`);
+                      // switches player
+                    } else {
+                      const currentPlayerIndex = players.indexOf(
+                        String(socket?.id)
+                      );
+                      // Calculate the index of the next player
+                      const nextPlayerIndex =
+                        (currentPlayerIndex + 1) % players.length;
+                      const nextPlayerSocketId = players[nextPlayerIndex];
+                      // Update the current player
+                      setCurrentPlayer(
+                        nextPlayerSocketId === players[0] ? "Red" : "Yellow"
+                      );
+                      setIsMyTurn(nextPlayerSocketId === socket?.id);
+                    }
+                    setIsMoveInProgress(false);
+                  }, 100);
+                });
+              }
+            }
+          }
+          return;
+        }
+      }
+    }
+    alert("Column is full");
+  }
 
-	const resetGame = () => {
-		// clear game board
-		setBoard(Array.from({ length: rows }, () => Array(cols).fill(null)));
-		// setCurrentPlayer("Red");
-	};
+  const checkWinner = (
+    board: (null | "Red" | "Yellow")[][],
+    row: number,
+    col: number
+  ): boolean => {
+    const directions = [
+      { dr: -1, dc: 0 }, // vertical
+      { dr: 0, dc: 1 }, // horizontal
+      { dr: -1, dc: 1 }, // diagonal right
+      { dr: -1, dc: -1 }, // diagonal left
+    ];
 
-	const [winner, setWinner] = useState<string | null>(null);
+    // loop to find 4 in a row
+    for (const { dr, dc } of directions) {
+      let count = 1;
+      count += countDirection(board, row, col, dr, dc);
+      count += countDirection(board, row, col, -dr, -dc);
+      if (count >= 4) return true;
+    }
+    return false;
+  };
 
-	const handleGameEnd = (winningPlayer: string) => {
-		setWinner(winningPlayer);
-	};
+  const countDirection = (
+    board: (null | "Red" | "Yellow")[][],
+    row: number,
+    col: number,
+    dr: number,
+    dc: number
+  ): number => {
+    let r: number = row + dr;
+    let c: number = col + dc;
+    let count: number = 0;
 
-	const handleCloseModal = () => {
-		setWinner(null);
+    while (
+      r >= 0 &&
+      r < rows &&
+      c >= 0 &&
+      c < cols &&
+      board[r][c] === currentPlayer
+    ) {
+      count++;
+      r += dr;
+      c += dc;
+    }
+    return count;
+  };
+
+  const resetGame = () => {
+    // clear game board
+    setBoard(Array.from({ length: rows }, () => Array(cols).fill(null)));
+    // setCurrentPlayer("Red");
+  };
+
+  const [winner, setWinner] = useState<string | null>(null);
+
+  const handleGameEnd = (winningPlayer: string) => {
+    setWinner(winningPlayer);
+  };
+
+  const handleCloseModal = () => {
+    setWinner(null);
     resetGame();
-	};
+  };
 
-	return (
-		<>
-			<div className="text-center" ><h1>Invite Code: {roomId}</h1></div>
-			<div className="game-container">
-				<div>
-					Current Player:{" "}
-					<span className={currentPlayer.toLowerCase()}>
-						{currentPlayer == "Red" ? roomUsernames[0] : roomUsernames[1]}
-					</span>
-				</div>
-				<div className="game-board">
-					{board.map((row, r) =>
-						row.map((cell, c) => (
-							<div
-								key={`${r}-${c}`}
-								className={`cell ${cell?.toLowerCase() || ""}`}
-								onClick={() => handleMove(c)}
-							></div>
-						))
-					)}
-				</div>
-				<WinnerModal
-					winner={winner}
-					playerName={winner == "Red" ? roomUsernames[0] : roomUsernames[1]}
-					onClose={handleCloseModal}
-				/>
-			</div>
-		</>
-	);
+  return (
+    <>
+      <div className="text-center">
+        <h1>Invite Code: {roomId}</h1>
+      </div>
+      <div className="game-container">
+        <div>
+          Current Player:{" "}
+          <span className={currentPlayer.toLowerCase()}>
+            {currentPlayer == "Red" ? roomUsernames[0] : roomUsernames[1]}
+          </span>
+        </div>
+        <div className="game-board">
+          {board.map((row, r) =>
+            row.map((cell, c) => (
+              <div
+                key={`${r}-${c}`}
+                className={`cell ${cell?.toLowerCase() || ""}`}
+                onClick={() => handleMove(c)}
+              ></div>
+            ))
+          )}
+        </div>
+        <WinnerModal
+          winner={winner}
+          playerName={winner == "Red" ? roomUsernames[0] : roomUsernames[1]}
+          onClose={handleCloseModal}
+        />
+      </div>
+    </>
+  );
 };
 
 export default MultiplayerGameBoard;
