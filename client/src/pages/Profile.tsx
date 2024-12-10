@@ -10,6 +10,9 @@ interface UpdateUser {
   username?: string;
   email?: string;
   password?: string;
+  games_played?:number;
+  games_won?:number;
+  games_lost?:number;
 }
 
 const Profile = () => {

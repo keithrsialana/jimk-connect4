@@ -38,6 +38,16 @@ interface DeleteUserArgs {
   userId: string; // The ID of the user to delete
 }
 
+interface UpdateGameStatsArgs {
+  input: {
+    _id?: number;
+    username?:string;
+    games_played?: number; // Optional field
+    games_won?: number; // Optional field
+    games_lost?: number; // Optional field
+  };
+}
+
 const resolvers = {
   Query: {
     users: async () => {
@@ -120,9 +130,9 @@ const resolvers = {
           updates.password = await bcrypt.hash(input.password, saltRounds);
         }
 
-        if(input.games_played)  updates.games_played = input.games_played;
-        if(input.games_won)  updates.games_won = input.games_won;
-        if(input.games_lost)  updates.games_lost = input.games_lost;
+        if (input.games_played) updates.games_played = input.games_played;
+        if (input.games_won) updates.games_won = input.games_won;
+        if (input.games_lost) updates.games_lost = input.games_lost;
 
         const updatedUser = await User.findOneAndUpdate(
           { _id: context.user._id },
@@ -148,8 +158,12 @@ const resolvers = {
       }
       throw new AuthenticationError("Could not authenticate user.");
     },
-    
-    deleteUser: async (_parent: any, { userId }: DeleteUserArgs, context: any) => {
+
+    deleteUser: async (
+      _parent: any,
+      { userId }: DeleteUserArgs,
+      context: any
+    ) => {
       if (context.user) {
         const deletedUser = await User.findOneAndDelete({ _id: userId });
         if (!deletedUser) {
@@ -160,6 +174,42 @@ const resolvers = {
       throw new AuthenticationError("Could not authenticate user.");
     },
 
+    updateGameStats: async (
+      _parent: any,
+      { input }: UpdateGameStatsArgs,
+      context: any
+    ) => {
+      if (context.user) {
+        const updates: any = {};
+        
+        // Only add fields to updates if they are provided
+        if (input.games_played !== undefined)
+          updates.games_played = input.games_played;
+        if (input.games_won !== undefined) updates.games_won = input.games_won;
+        if (input.games_lost !== undefined)
+          updates.games_lost = input.games_lost;
+
+        const updatedUser = await User.findOneAndUpdate(
+          { _id: input._id },
+          { $set: updates }, // Only set the provided fields
+          { new: true }
+        );
+
+        // Check if the user was found and updated
+        if (!updatedUser) {
+          throw new Error("User not found or could not be updated.");
+        }
+        // Sign a new token with the updated user information
+        const token = signToken(
+          updatedUser.username,
+          updatedUser.email,
+          updatedUser._id
+        );
+        // Return the updated user
+        return {token, updatedUser};
+      }
+      throw new AuthenticationError("Could not authenticate user.");
+    },
   },
 };
 
