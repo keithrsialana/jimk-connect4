@@ -1715,6 +1715,11 @@ label form [type='radio'] {
   position: relative;
   text-align: center;
   margin: 20px auto;
+  justify-content: center;
+  /* display: flex; */
+  flex-direction: column;
+  width: max-content;
+  align-items: center;
 }
 
 .red {
@@ -1729,19 +1734,25 @@ label form [type='radio'] {
   display: grid;
   grid-template-columns: repeat(7, 50px);
   grid-gap: 5px;
-  margin: 20px auto;
   margin-top: 4rem;
   justify-content: center;
+  border: 4px solid #999;
+  background-color: #2b2b4f;
+  position: relative;
+  z-index: 1;
+  padding: 10px;
+  /* width: max-content; */
+  /* overflow: visible; */
 }
 
 .cell {
   width: 50px;
   height: 50px;
-  background-color: ;
-  border: 4px solid #999;
+  border: 3px solid #999;
+  background-color: #091540;
   border-radius: 50%;
   cursor: pointer;
-  z-index: 5;
+  z-index: 3;
 }
 
 .cell.red {
@@ -1750,6 +1761,20 @@ label form [type='radio'] {
 
 .cell.yellow {
   background-color: yellow;
+}
+
+.cell:hover {
+  background-color: rgba(255, 255, 255, 0.2); /* Highlight hovered cell */
+}
+
+.cell:hover:nth-child(7n+1),
+.cell:hover:nth-child(7n+2),
+.cell:hover:nth-child(7n+3),
+.cell:hover:nth-child(7n+4),
+.cell:hover:nth-child(7n+5),
+.cell:hover:nth-child(7n+6),
+.cell:hover:nth-child(7n+7) {
+  background-color: rgba(255, 255, 255, 0.2);
 }
 
 .chip.red {
@@ -1762,7 +1787,7 @@ label form [type='radio'] {
 
 @keyframes drop {
 	from {
-		top: 5px;
+		top: 25px;
 	}
 
 	to {
@@ -1775,12 +1800,12 @@ label form [type='radio'] {
 	height: 50px;
 	border-radius: 50%;
 	position: absolute;
-	animation: drop 1s ease-in-out;
-  /* top: -100px; */
-	/* Adjust duration and easing for smooth animation */
-	z-index: 0;
-	/* Ensure it's above the board temporarily */
+	animation: drop .8s ease-in-out;
+	z-index: 2;
   will-change: transform;
+  justify-content: center;
+  align-items: center;
+  display: flex;
 }
 
 .button-margin {

@@ -10,8 +10,11 @@ const GameBoard: React.FC = () => {
 		Array.from({ length: rows }, () => Array(cols).fill(null))
 	);
 	const [currentPlayer, setCurrentPlayer] = useState<"Red" | "Yellow">("Red");
+	const [isMoveInProgress, setIsMoveInProgress] = useState(false);
+	const [winner, setWinner] = useState<string | null>(null);
 
 	function handleMove(col: number): void {
+		if (isMoveInProgress || winner) return; 
 		for (let r = rows - 1; r >= 0; r--) {
 			if (!board[r][col]) {
 				const cell = document.querySelector(
@@ -32,6 +35,7 @@ const GameBoard: React.FC = () => {
 						if (gameContainer) {
 							gameContainer.appendChild(chip);
 	
+							setIsMoveInProgress(true);
 							setTimeout(() => {
 								chip.style.top = `${cellRect.top - gameBoardRect.top}px`; // Move to the correct row
 								chip.style.left = `${cellRect.left - gameBoardRect.left}px`; // Align horizontally
@@ -49,6 +53,7 @@ const GameBoard: React.FC = () => {
 								} else {
 									setCurrentPlayer(currentPlayer === "Red" ? "Yellow" : "Red");
 								}
+								setIsMoveInProgress(false);
 							});
 						}
 					}
@@ -112,8 +117,6 @@ const GameBoard: React.FC = () => {
 		setCurrentPlayer("Red");
 	};
 
-	const [winner, setWinner] = useState<string | null>(null);
-
 	const handleGameEnd = (winningPlayer: string) => {
 		setWinner(winningPlayer);
 	};
@@ -138,7 +141,8 @@ const GameBoard: React.FC = () => {
 							key={`${r}-${c}`}
 							className={`cell ${cell?.toLowerCase() || ""}`}
 							onClick={() => handleMove(c)}
-						></div>
+						>
+						</div>
 					))
 				)}
 			</div>
