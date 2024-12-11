@@ -2,8 +2,8 @@ import React, { useState, useEffect } from "react";
 import WinnerModal from "../WinnerModal";
 import { useSocket } from "../../context/SocketContext";
 import { useParams } from "react-router-dom";
-// import { useQuery } from "@apollo/client";
-// import { QUERY_USER } from "../../utils/queries";
+import { useQuery } from "@apollo/client";
+import { QUERY_USER } from "../../utils/queries";
 
 const MultiplayerGameBoard: React.FC = () => {
   const socket = useSocket();
@@ -21,6 +21,49 @@ const MultiplayerGameBoard: React.FC = () => {
   const [players, setPlayers] = useState<string[]>([]);
   const [roomUsernames, setUsernames] = useState<string[]>([]);
   const [isMoveInProgress, setIsMoveInProgress] = useState(false);
+  const [gameStart, setGameStart] = useState<boolean>(false);
+  const [player1Username, setPlayer1Username] = useState<string>("");
+  const [player1GamesPlayed, setPlayer1GamesPlayed] = useState<number>();
+  const [player1GamesWon, setPlayer1GamesWon] = useState<number>();
+  const [player1GamesLost, setPlayer1GamesLost] = useState<number>();
+  const [player2Username, setPlayer2Username] = useState<string>("");
+  const [player2GamesPlayed, setPlayer2GamesPlayed] = useState<number>();
+  const [player2GamesWon, setPlayer2GamesWon] = useState<number>();
+  const [player2GamesLost, setPlayer2GamesLost] = useState<number>();
+
+  const player1Query = useQuery(QUERY_USER, {
+    variables: { username: roomUsernames[0] },
+    skip: roomUsernames.length < 2,
+  });
+
+  const player2Query = useQuery(QUERY_USER, {
+    variables: { username: roomUsernames[1] },
+    skip: roomUsernames.length < 2,
+  });
+
+  useEffect(() => {
+    const { data: player1Data } = player1Query;
+    // const { data: player2Data } = player2Query;
+    if (player1Data) {
+      setPlayer1Username(player1Data.user.username);
+      setPlayer1GamesPlayed(player1Data.user.games_played);
+      setPlayer1GamesWon(player1Data.user.games_won);
+      setPlayer1GamesLost(player1Data.user.games_lost);
+      console.log("Player 1 stats:", player1Data);
+    }
+  }, [player1Query]);
+
+  useEffect(() => {
+    const { data: player2Data } = player2Query;
+    // const { data: player2Data } = player2Query;
+    if (player2Data) {
+      setPlayer2Username(player2Data.user.username);
+      setPlayer2GamesPlayed(player2Data.user.games_played);
+      setPlayer2GamesWon(player2Data.user.games_won);
+      setPlayer2GamesLost(player2Data.user.games_lost);
+      console.log("Player 2 stats:", player2Data);
+    }
+  }, [player2Query]);
 
   useEffect(() => {
     socket?.on("roomData", ({ players, currentPlayer, usernames }) => {
@@ -39,6 +82,7 @@ const MultiplayerGameBoard: React.FC = () => {
     socket?.on("startGame", () => {
       // Determine if it's the player's turn based on their ID
       setCurrentPlayer("Red");
+      setGameStart(true);
     });
 
     socket?.on("updateBoard", (newBoard) => {
@@ -63,6 +107,21 @@ const MultiplayerGameBoard: React.FC = () => {
     };
   }, [socket, roomId]);
 
+  function highlightColumn(colIndex: number, add: boolean): void {
+		const cells = document.querySelectorAll(".cell");
+		cells.forEach((cell, index) => {
+			if (index % 7 === colIndex) { // Assuming 7 columns
+				add ? cell.classList.add("highlight") : cell.classList.remove("highlight");
+			}
+		});
+	}
+
+	document.querySelectorAll(".cell").forEach((cell, index) => {
+		const col = index % 7; // Get column index
+		cell.addEventListener("mouseenter", () => highlightColumn(col, true));
+		cell.addEventListener("mouseleave", () => highlightColumn(col, false));
+	});
+  
   function handleMove(col: number): void {
     if (!isMyTurn) {
       alert("NOT YOUR TURN");
@@ -207,35 +266,63 @@ const MultiplayerGameBoard: React.FC = () => {
 
   return (
     <>
-      <div className="text-center">
-        <h1>Invite Code: {roomId}</h1>
-      </div>
-      <div className="game-container">
+      {!gameStart ? (
+        <div className="text-center">
+          <h1>Invite Code: {roomId}</h1>
+        </div>
+      ) : (
         <div>
-          Current Player:{" "}
-          <span className={currentPlayer.toLowerCase()}>
-            {currentPlayer == "Red" ? roomUsernames[0] : roomUsernames[1]}
-          </span>
+          <div>
+            <h1 className="current-move">
+              Current Move:{" "}
+              <span className={currentPlayer.toLowerCase()}>
+                {currentPlayer == "Red" ? roomUsernames[0] : roomUsernames[1]}
+              </span>
+            </h1>
+          </div>
+          <div className="game-container">
+            <div className="in-game-profile-p1">
+              <div className="card-title-p1">
+                <h3 className="igp-card-items">{player1Username}</h3>
+              </div>
+              <p className="igp-card-items">Games Played: {player1GamesPlayed}</p>
+              <p className="igp-card-items">Wins: {player1GamesWon}</p>
+              <p className="igp-card-items">Losses: {player1GamesLost}</p>
+            </div>
+            <div>
+              <div className="game-board">
+                {board.map((row, r) =>
+                  row.map((cell, c) => (
+                    <div
+                      key={`${r}-${c}`}
+                      className={`cell ${cell?.toLowerCase() || ""}`}
+                      onClick={() => handleMove(c)}
+                    ></div>
+                  ))
+                )}
+              </div>
+              <WinnerModal
+                winner={winner}
+                playerName={
+                  winner == "Red" ? roomUsernames[0] : roomUsernames[1]
+                }
+                onClose={handleCloseModal}
+              />
+            </div>
+            <div>
+							<div className="in-game-profile-p2">
+								<div className="card-title-p2">
+									<h3 className="igp-card-items">{player2Username}</h3>
+								</div>
+								<p className="igp-card-items">Games Played: {player2GamesPlayed}</p>
+								<p className="igp-card-items">Wins: {player2GamesWon}</p>
+								<p className="igp-card-items">Losses: {player2GamesLost}</p>
+							</div>
+						</div>
+          </div>
         </div>
-        <div className="game-board">
-          {board.map((row, r) =>
-            row.map((cell, c) => (
-              <div
-                key={`${r}-${c}`}
-                className={`cell ${cell?.toLowerCase() || ""}`}
-                onClick={() => handleMove(c)}
-              ></div>
-            ))
-          )}
-        </div>
-        <WinnerModal
-          winner={winner}
-          playerName={winner == "Red" ? roomUsernames[0] : roomUsernames[1]}
-          onClose={handleCloseModal}
-        />
-      </div>
+      )}
     </>
   );
 };
-
 export default MultiplayerGameBoard;
