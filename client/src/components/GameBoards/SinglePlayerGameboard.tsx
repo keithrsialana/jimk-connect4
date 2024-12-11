@@ -157,7 +157,6 @@ const SinglePlayerGameBoard: React.FC = () => {
 	const resetGame = () => {
 		// clear game board
 		setBoard(Array.from({ length: rows }, () => Array(cols).fill(null)));
-		setCurrentPlayer("Red");
 	};
 
 	const [winner, setWinner] = useState<string | null>(null);
