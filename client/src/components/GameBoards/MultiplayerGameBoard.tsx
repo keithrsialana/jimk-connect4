@@ -408,6 +408,7 @@ const MultiplayerGameBoard: React.FC = () => {
                   winner == "Red" ? roomUsernames[0] : roomUsernames[1]
                 }
                 onClose={handleCloseModal}
+                currentPlayer={players[0] === socket?.id ? "Red" : "Yellow"}
               />
             </div>
             <div>

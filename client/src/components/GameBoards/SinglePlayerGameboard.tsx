@@ -319,6 +319,7 @@ const SinglePlayerGameBoard: React.FC = () => {
                 winner={winner}
                 playerName={winner == "Red" ? player1 : player2}
                 onClose={handleCloseWinnerModal}
+                currentPlayer={currentPlayer}
               />
             </div>
             <div>
