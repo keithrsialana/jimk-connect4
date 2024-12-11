@@ -27,9 +27,6 @@ const SetPlayerModal: React.FC<SetPlayerModalProps> = ({
 	const [error, setError] = useState<string | null>(null);
 	const { data } = useQuery(QUERY_USER, {
 		variables: { username: playerName }, // Pass the username as a variable
-		onError: () => {
-			setError("An error occurred while searching for the user.");
-		},
 	});
 
 	useEffect(() => {
@@ -56,7 +53,7 @@ const SetPlayerModal: React.FC<SetPlayerModalProps> = ({
 					value={playerName}
 					onChange={(e) => setPlayerName(e.target.value)}
 					placeholder={"Enter Player " + playerNum + " username"}
-					readOnly={nameValue? true : false}
+					readOnly={nameValue ? true : false}
 				/>
 			</form>
 			{error && <p className="error">{error}</p>}
