@@ -4,6 +4,18 @@ import { useSocket } from "../../context/SocketContext";
 import { useParams } from "react-router-dom";
 import { useQuery } from "@apollo/client";
 import { QUERY_USER } from "../../utils/queries";
+import { UPDATE_GAME_STATS } from "../../utils/mutations"; // Ensure this mutation is imported
+import { useMutation } from "@apollo/client";
+
+// Define the input type for the update
+interface UserProfile {
+  _id?: number;
+  username?: string;
+  email?: string;
+  games_played?: number;
+  games_won?: number;
+  games_lost?: number;
+}
 
 const MultiplayerGameBoard: React.FC = () => {
   const socket = useSocket();
@@ -22,19 +34,23 @@ const MultiplayerGameBoard: React.FC = () => {
   const [roomUsernames, setUsernames] = useState<string[]>([]);
   const [isMoveInProgress, setIsMoveInProgress] = useState(false);
   const [gameStart, setGameStart] = useState<boolean>(false);
+  // Game statistics
+  const [updateGameStats] = useMutation(UPDATE_GAME_STATS);
 
-  const [player1Data, setPlayer1Data] = useState({
-    username: "",
-    gamesPlayed: 0,
-    wins: 0,
-    losses: 0
-  });
-  const [player2Data, setPlayer2Data] = useState({
-    username: "",
-    gamesPlayed: 0,
-    wins: 0,
-    losses: 0
-  });
+  const [player1Data, setPlayer1Data] = useState<UserProfile>();
+  const [player2Data, setPlayer2Data] = useState<UserProfile>();
+  // const [player1Data, setPlayer1Data] = useState({
+  //   username: "",
+  //   gamesPlayed: 0,
+  //   wins: 0,
+  //   losses: 0
+  // });
+  // const [player2Data, setPlayer2Data] = useState({
+  //   username: "",
+  //   gamesPlayed: 0,
+  //   wins: 0,
+  //   losses: 0
+  // });
 
   const player1Query = useQuery(QUERY_USER, {
     variables: { username: roomUsernames[0] },
@@ -50,10 +66,12 @@ const MultiplayerGameBoard: React.FC = () => {
     const { data: player1DBData } = player1Query;
     if (player1DBData) {
       setPlayer1Data({
+        _id: player1DBData.user._id,
         username: player1DBData.user.username,
-        gamesPlayed: player1DBData.user.games_played,
-        wins: player1DBData.user.games_won,
-        losses: player1DBData.user.games_lost
+        email: player1DBData.user.email,
+        games_played: player1DBData.user.games_played,
+        games_won: player1DBData.user.games_won,
+        games_lost: player1DBData.user.games_lost,
       });
     }
   }, [player1Query]);
@@ -61,11 +79,14 @@ const MultiplayerGameBoard: React.FC = () => {
   useEffect(() => {
     const { data: player2DBData } = player2Query;
     if (player2DBData) {
+      console.log("check the id first:" + player2DBData._id)
       setPlayer2Data({
+        _id: player2DBData.user._id,
         username: player2DBData.user.username,
-        gamesPlayed: player2DBData.user.games_played,
-        wins: player2DBData.user.games_won,
-        losses: player2DBData.user.games_lost
+        email: player2DBData.user.email,
+        games_played: player2DBData.user.games_played,
+        games_won: player2DBData.user.games_won,
+        games_lost: player2DBData.user.games_lost,
       });
     }
   }, [player2Query]);
@@ -98,7 +119,7 @@ const MultiplayerGameBoard: React.FC = () => {
       alert(message); // Notify the player that it's not their turn
     });
 
-    socket?.on("gameOver", (winner) => {
+    socket?.on("gameOver", async (winner) => {
       setWinner(winner); // Set the winner state
     });
 
@@ -113,20 +134,23 @@ const MultiplayerGameBoard: React.FC = () => {
   }, [socket, roomId]);
 
   function highlightColumn(colIndex: number, add: boolean): void {
-		const cells = document.querySelectorAll(".cell");
-		cells.forEach((cell, index) => {
-			if (index % 7 === colIndex) { // Assuming 7 columns
-				add ? cell.classList.add("highlight") : cell.classList.remove("highlight");
-			}
-		});
-	}
+    const cells = document.querySelectorAll(".cell");
+    cells.forEach((cell, index) => {
+      if (index % 7 === colIndex) {
+        // Assuming 7 columns
+        add
+          ? cell.classList.add("highlight")
+          : cell.classList.remove("highlight");
+      }
+    });
+  }
 
-	document.querySelectorAll(".cell").forEach((cell, index) => {
-		const col = index % 7; // Get column index
-		cell.addEventListener("mouseenter", () => highlightColumn(col, true));
-		cell.addEventListener("mouseleave", () => highlightColumn(col, false));
-	});
-  
+  document.querySelectorAll(".cell").forEach((cell, index) => {
+    const col = index % 7; // Get column index
+    cell.addEventListener("mouseenter", () => highlightColumn(col, true));
+    cell.addEventListener("mouseleave", () => highlightColumn(col, false));
+  });
+
   function handleMove(col: number): void {
     if (!isMyTurn) {
       alert("BRO STOP 😠 IT'S NOT YOUR TURN");
@@ -261,13 +285,81 @@ const MultiplayerGameBoard: React.FC = () => {
   const [winner, setWinner] = useState<string | null>(null);
 
   const handleGameEnd = (winningPlayer: string) => {
-    setWinner(winningPlayer);
+     setWinner(winningPlayer);
   };
 
   const handleCloseModal = () => {
     setWinner(null);
     resetGame();
   };
+
+  useEffect(() => {
+    // Ensure player profiles are available and valid
+    if (player1Data && player2Data) {
+      const updatePlayerStats = (playerProfile: any, isWinner: any) => {
+        const gamesPlayed = playerProfile.games_played + 1;
+        const gamesWon = isWinner
+          ? playerProfile.games_won + 1
+          : playerProfile.games_won;
+        const gamesLost = isWinner
+          ? playerProfile.games_lost
+          : playerProfile.games_lost + 1;
+  
+        return {
+          _id: playerProfile._id,
+          username: playerProfile.username,
+          email: playerProfile.email,
+          games_played: gamesPlayed,
+          games_won: gamesWon,
+          games_lost: gamesLost,
+        };
+      };
+  
+      const player1Stats = updatePlayerStats(
+        player1Data,
+        winner === "Red"
+      );
+      const player2Stats = updatePlayerStats(
+        player2Data,
+        winner === "Yellow"
+      );
+  
+      setPlayer1Data(player1Stats);
+      setPlayer2Data(player2Stats);
+      
+      console.log("checking the id " + JSON.stringify(player1Data._id));
+  
+      // Function to update player stats and handle errors
+      const updateStats = async (stats: any, playerNumber: any) => {
+        try {
+          await updateGameStats({
+            variables: { input: stats },
+            refetchQueries: [
+              {
+                query: QUERY_USER,
+                variables: { username: stats.username },
+              },
+            ],
+          });
+        } catch (error: any) {
+          console.error(
+            `Error updating Player ${playerNumber}: ${
+              error.graphQLErrors[0]?.message || error.message
+            }`
+          );
+        }
+      };
+  
+      // Create an async function to handle the updates
+      const updatePlayerStatsAsync = async () => {
+        await updateStats(player1Stats, 1);
+        await updateStats(player2Stats, 2);
+      };
+  
+      // Call the async function
+      updatePlayerStatsAsync();
+    }
+  }, [winner]);
 
   return (
     <>
@@ -288,11 +380,15 @@ const MultiplayerGameBoard: React.FC = () => {
           <div className="game-container">
             <div className="in-game-profile-p1">
               <div className="card-title-p1">
-                <h3 className="igp-card-items">{player1Data.username}</h3>
+                <h3 className="igp-card-items">{player1Data?.username}</h3>
               </div>
-              <p className="igp-card-items">Games Played: {player1Data.gamesPlayed}</p>
-              <p className="igp-card-items">Wins: {player1Data.wins}</p>
-              <p className="igp-card-items">Losses: {player1Data.losses}</p>
+              <p className="igp-card-items">
+                Games Played: {player1Data?.games_played}
+              </p>
+              <p className="igp-card-items">Wins: {player1Data?.games_won}</p>
+              <p className="igp-card-items">
+                Losses: {player1Data?.games_lost}
+              </p>
             </div>
             <div>
               <div className="game-board">
@@ -315,15 +411,19 @@ const MultiplayerGameBoard: React.FC = () => {
               />
             </div>
             <div>
-							<div className="in-game-profile-p2">
-								<div className="card-title-p2">
-									<h3 className="igp-card-items">{player2Data.username}</h3>
-								</div>
-								<p className="igp-card-items">Games Played: {player2Data.gamesPlayed}</p>
-								<p className="igp-card-items">Wins: {player2Data.wins}</p>
-								<p className="igp-card-items">Losses: {player2Data.losses}</p>
-							</div>
-						</div>
+              <div className="in-game-profile-p2">
+                <div className="card-title-p2">
+                  <h3 className="igp-card-items">{player2Data?.username}</h3>
+                </div>
+                <p className="igp-card-items">
+                  Games Played: {player2Data?.games_played}
+                </p>
+                <p className="igp-card-items">Wins: {player2Data?.games_won}</p>
+                <p className="igp-card-items">
+                  Losses: {player2Data?.games_lost}
+                </p>
+              </div>
+            </div>
           </div>
         </div>
       )}
