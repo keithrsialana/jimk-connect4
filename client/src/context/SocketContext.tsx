@@ -7,7 +7,7 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const [socket, setSocket] = useState<Socket | null>(null);
 
   useEffect(() => {
-    const newSocket = io('http://localhost:3001', {
+    const newSocket = io('https://jimk-connect4.onrender.com/', {
       autoConnect: false, // Prevent automatic connection
     });
 
