@@ -19,10 +19,12 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@types/canvas-confetti": "^1.6.4",
     "concurrently": "^8.2.2",
     "wait-on": "^7.2.0"
   },
   "dependencies": {
+    "canvas-confetti": "^1.9.3",
     "socket.io": "^4.8.1",
     "socket.io-client": "^4.8.1",
     "uuid": "^11.0.3"
