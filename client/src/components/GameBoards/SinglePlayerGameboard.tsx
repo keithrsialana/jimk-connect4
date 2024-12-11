@@ -3,6 +3,7 @@ import WinnerModal from "../WinnerModal";
 import SetPlayerModal from "../SetPlayerModal";
 import { useMutation } from "@apollo/client";
 import { UPDATE_GAME_STATS } from "../../utils/mutations"; // Ensure this mutation is imported
+import Auth from "../../utils/auth";
 
 // Define the input type for the update
 interface UserProfile {
@@ -14,7 +15,6 @@ interface UserProfile {
 	games_lost?: number;
 }
 
-
 const SinglePlayerGameBoard: React.FC = () => {
 	const [gamestart, setGameStart] = useState<boolean>(false);
 	const [player1, setPlayer1] = useState<string>("");
@@ -22,6 +22,7 @@ const SinglePlayerGameBoard: React.FC = () => {
 	const [player1Profile, setPlayer1Profile] = useState<UserProfile>();
 	const [player2Profile, setPlayer2Profile] = useState<UserProfile>();
 	const [isMoveInProgress, setIsMoveInProgress] = useState(false);
+	const [gameStartButton, setGameStartButton] = useState<boolean>(false);
 
 	// Game statistics
 	const [updateGameStats] = useMutation(UPDATE_GAME_STATS);
@@ -221,10 +222,14 @@ const SinglePlayerGameBoard: React.FC = () => {
 		}
 	};
 
+	const handleGameStart = () => {
+		setGameStart(true);
+	};
+
 	useEffect(() => {
 		// if both players are set, start the game
 		if (player1 && player2)
-			setGameStart(true);
+			setGameStartButton(true);
 	}, [player1, player2]);
 
 	return (
@@ -278,8 +283,11 @@ const SinglePlayerGameBoard: React.FC = () => {
 			) : (
 				<>
 					<h2>Starting Game...</h2>
-					<SetPlayerModal playerNum={1} onSetPlayer={handleSetPlayer} />
+					<SetPlayerModal playerNum={1} onSetPlayer={handleSetPlayer} nameValue={Auth.getProfile().data.username}/>
 					<SetPlayerModal playerNum={2} onSetPlayer={handleSetPlayer} />
+					{ gameStartButton ? (
+						<button className="btn btn-primary" onClick={handleGameStart}>Start Game</button>
+					): (<></>) }
 				</>
 			)}
 		</>
