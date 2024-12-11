@@ -21,7 +21,7 @@ To install the game, follow these steps:
 ## Usage Instructions
 1. Start the game using `npm start` or `yarn start`.
 ### Deployed application
-Coming soon!
+You can access the deployed application at [https://jimk-connect4.onrender.com/](https://jimk-connect4.onrender.com/)
 ### Local deployment
 To play the game locally, follow these steps:
 
