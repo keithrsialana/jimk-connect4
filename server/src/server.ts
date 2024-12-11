@@ -128,13 +128,6 @@ const startApolloServer = async () => {
 			io.emit("receiveMessage", message); // Broadcast message to all clients
 		});
 
-		// Handle the testConnection event
-		// socket.on("testConnection", (data, callback) => {
-		//   console.log("Test connection data received:", data);
-		//   // Send an acknowledgment back to the client
-		//   callback({ status: "success", message: "Connection test successful" });
-		// });
-
 		// Handle creating a room with a unique ID
 		socket.on("createRoom", (hostUsername) => {
 			const inviteCode = uuidv4();
@@ -151,7 +144,6 @@ const startApolloServer = async () => {
 			};
 			socket.join(roomId);
 			socket.emit("roomCreated", { roomId, inviteCode });
-			console.log(`Room created: ${roomId} with invite code: ${roomId}`);
 		});
 
 		socket.on("joinRoom", (inviteCode, myUsername) => {
@@ -221,7 +213,7 @@ const startApolloServer = async () => {
 		});
 
 		socket.on("disconnect", () => {
-			console.log("User  disconnected:", socket.id);
+			console.log("User disconnected:", socket.id);
 		});
 	});
 

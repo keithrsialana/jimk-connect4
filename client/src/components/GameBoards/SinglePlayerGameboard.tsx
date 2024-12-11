@@ -189,10 +189,8 @@ const SinglePlayerGameBoard: React.FC = () => {
 			const updateStats = async (stats: any, playerNumber: any) => {
 				try {
 					await updateGameStats({ variables: { input: stats } });
-					alert(`Player ${playerNumber} profile updated successfully!`);
 				} catch (error: any) {
-					console.error(error);
-					alert(`Error updating Player ${playerNumber}: ${error.graphQLErrors[0]?.message || error.message}`);
+					console.error(`Error updating Player ${playerNumber}: ${error.graphQLErrors[0]?.message || error.message}`);
 				}
 			};
 

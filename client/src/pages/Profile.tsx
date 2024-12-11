@@ -79,8 +79,7 @@ const Profile = () => {
       
       alert("Profile updated successfully!");
     } catch (error: any) {
-      console.error(error);
-      alert("Error updating user: " + (error.graphQLErrors[0]?.message || error.message));
+      console.error("Error updating user: " + (error.graphQLErrors[0]?.message || error.message));
     }
 };
 
@@ -94,8 +93,7 @@ const handleDelete = async () => {
       alert("Profile deleted successfully!");
       window.location.href = "/";
     } catch(error: any){
-      console.error(error);
-      alert("Error deleting user: " + (error.graphQLErrors[0]?.message || error.message))
+      console.error("Error deleting user: " + (error.graphQLErrors[0]?.message || error.message));
     }
   }
 };

@@ -22,14 +22,19 @@ const MultiplayerGameBoard: React.FC = () => {
   const [roomUsernames, setUsernames] = useState<string[]>([]);
   const [isMoveInProgress, setIsMoveInProgress] = useState(false);
   const [gameStart, setGameStart] = useState<boolean>(false);
-  const [player1Username, setPlayer1Username] = useState<string>("");
-  const [player1GamesPlayed, setPlayer1GamesPlayed] = useState<number>();
-  const [player1GamesWon, setPlayer1GamesWon] = useState<number>();
-  const [player1GamesLost, setPlayer1GamesLost] = useState<number>();
-  const [player2Username, setPlayer2Username] = useState<string>("");
-  const [player2GamesPlayed, setPlayer2GamesPlayed] = useState<number>();
-  const [player2GamesWon, setPlayer2GamesWon] = useState<number>();
-  const [player2GamesLost, setPlayer2GamesLost] = useState<number>();
+
+  const [player1Data, setPlayer1Data] = useState({
+    username: "",
+    gamesPlayed: 0,
+    wins: 0,
+    losses: 0
+  });
+  const [player2Data, setPlayer2Data] = useState({
+    username: "",
+    gamesPlayed: 0,
+    wins: 0,
+    losses: 0
+  });
 
   const player1Query = useQuery(QUERY_USER, {
     variables: { username: roomUsernames[0] },
@@ -42,26 +47,26 @@ const MultiplayerGameBoard: React.FC = () => {
   });
 
   useEffect(() => {
-    const { data: player1Data } = player1Query;
-    // const { data: player2Data } = player2Query;
-    if (player1Data) {
-      setPlayer1Username(player1Data.user.username);
-      setPlayer1GamesPlayed(player1Data.user.games_played);
-      setPlayer1GamesWon(player1Data.user.games_won);
-      setPlayer1GamesLost(player1Data.user.games_lost);
-      console.log("Player 1 stats:", player1Data);
+    const { data: player1DBData } = player1Query;
+    if (player1DBData) {
+      setPlayer1Data({
+        username: player1DBData.user.username,
+        gamesPlayed: player1DBData.user.games_played,
+        wins: player1DBData.user.games_won,
+        losses: player1DBData.user.games_lost
+      });
     }
   }, [player1Query]);
 
   useEffect(() => {
-    const { data: player2Data } = player2Query;
-    // const { data: player2Data } = player2Query;
-    if (player2Data) {
-      setPlayer2Username(player2Data.user.username);
-      setPlayer2GamesPlayed(player2Data.user.games_played);
-      setPlayer2GamesWon(player2Data.user.games_won);
-      setPlayer2GamesLost(player2Data.user.games_lost);
-      console.log("Player 2 stats:", player2Data);
+    const { data: player2DBData } = player2Query;
+    if (player2DBData) {
+      setPlayer2Data({
+        username: player2DBData.user.username,
+        gamesPlayed: player2DBData.user.games_played,
+        wins: player2DBData.user.games_won,
+        losses: player2DBData.user.games_lost
+      });
     }
   }, [player2Query]);
 
@@ -124,7 +129,7 @@ const MultiplayerGameBoard: React.FC = () => {
   
   function handleMove(col: number): void {
     if (!isMyTurn) {
-      alert("NOT YOUR TURN");
+      alert("BRO STOP 😠 IT'S NOT YOUR TURN");
       return;
     } else {
       // finds lowest available row
@@ -283,11 +288,11 @@ const MultiplayerGameBoard: React.FC = () => {
           <div className="game-container">
             <div className="in-game-profile-p1">
               <div className="card-title-p1">
-                <h3 className="igp-card-items">{player1Username}</h3>
+                <h3 className="igp-card-items">{player1Data.username}</h3>
               </div>
-              <p className="igp-card-items">Games Played: {player1GamesPlayed}</p>
-              <p className="igp-card-items">Wins: {player1GamesWon}</p>
-              <p className="igp-card-items">Losses: {player1GamesLost}</p>
+              <p className="igp-card-items">Games Played: {player1Data.gamesPlayed}</p>
+              <p className="igp-card-items">Wins: {player1Data.wins}</p>
+              <p className="igp-card-items">Losses: {player1Data.losses}</p>
             </div>
             <div>
               <div className="game-board">
@@ -312,11 +317,11 @@ const MultiplayerGameBoard: React.FC = () => {
             <div>
 							<div className="in-game-profile-p2">
 								<div className="card-title-p2">
-									<h3 className="igp-card-items">{player2Username}</h3>
+									<h3 className="igp-card-items">{player2Data.username}</h3>
 								</div>
-								<p className="igp-card-items">Games Played: {player2GamesPlayed}</p>
-								<p className="igp-card-items">Wins: {player2GamesWon}</p>
-								<p className="igp-card-items">Losses: {player2GamesLost}</p>
+								<p className="igp-card-items">Games Played: {player2Data.gamesPlayed}</p>
+								<p className="igp-card-items">Wins: {player2Data.wins}</p>
+								<p className="igp-card-items">Losses: {player2Data.losses}</p>
 							</div>
 						</div>
           </div>
