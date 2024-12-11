@@ -17,6 +17,7 @@ To install the game, follow these steps:
 1. Clone the repository using `git clone https://github.com/keithrsialana/jimk-connect4.git`.
 2. Navigate to the project directory using `cd jimk-connect4`.
 3. Install the required dependencies using `npm install` or `yarn install`.
+4. Clone the `.env.example` file in the root directory and rename it to `.env`. Repeat this step for the `server` directory.
 ## Usage Instructions
 1. Start the game using `npm start` or `yarn start`.
 ### Deployed application
