@@ -228,10 +228,14 @@ const SinglePlayerGameBoard: React.FC = () => {
 
 	useEffect(() => {
 		// if both players are set, start the game
-		if (player1 && player2) {
+		if (player1 && player2 != "") {
 			if (player1 != player2)
 				setGameStartButton(true);
 		}
+		else if (player2 == "")
+			setGameStartButton(false);
+		else
+			setGameStartButton(false);
 	}, [player1, player2]);
 
 	return (

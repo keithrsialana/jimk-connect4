@@ -43,6 +43,7 @@ const SetPlayerModal: React.FC<SetPlayerModalProps> = ({
 			onSetPlayer(playerNum, playerName, data.user); // Call the parent function if user exists
 			setError("User found!");
 		} else if (data && !data.user) {
+			onSetPlayer(playerNum, "", {});
 			setError("User not found. Please try a different username.");
 		}
 	}, [data]);
