@@ -9,6 +9,11 @@ import { authenticateToken } from "./utils/auth.js";
 import http from "http";
 import { Server } from "socket.io";
 import { v4 as uuidv4 } from "uuid";
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 const server = new ApolloServer({
 	typeDefs,
@@ -24,6 +29,21 @@ const startApolloServer = async () => {
 
 	app.use(express.urlencoded({ extended: false }));
 	app.use(express.json());
+
+	app.use(
+		"/graphql",
+		expressMiddleware(server as any, {
+			context: authenticateToken as any,
+		})
+	);
+
+	if (process.env.NODE_ENV === "production") {
+		app.use(express.static(path.join(__dirname, "../../client/dist")));
+
+		app.get("*", (_req: Request, res: Response) => {
+			res.sendFile(path.join(__dirname, "../../client/dist/index.html"));
+		});
+	}
 
 	const httpServer = http.createServer(app);
 	const io = new Server(httpServer, {
@@ -216,21 +236,6 @@ const startApolloServer = async () => {
 			console.log("User disconnected:", socket.id);
 		});
 	});
-
-	app.use(
-		"/graphql",
-		expressMiddleware(server as any, {
-			context: authenticateToken as any,
-		})
-	);
-
-	if (process.env.NODE_ENV === "production") {
-		app.use(express.static(path.join(__dirname, "../client/dist")));
-
-		app.get("*", (_req: Request, res: Response) => {
-			res.sendFile(path.join(__dirname, "../client/dist/index.html"));
-		});
-	}
 
 	httpServer.listen(PORT, () => {
 		console.log(`API server running on port ${PORT}!`);

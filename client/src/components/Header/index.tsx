@@ -8,7 +8,7 @@ const Header = () => {
 			<div className="container container-fluid flex-row justify-space-between-lg justify-center align-center">
 				<div>
 					<Link className="text-light" to="/">
-						<img src="../public/MainLogo-Light.png" alt="JIMK Connect 4 Logo" />
+						<img src="/MainLogo-Light.png" alt="JIMK Connect 4 Logo" />
 					</Link>
 				</div>
 
