@@ -1,7 +1,6 @@
-import React, { ChangeEvent, useEffect, useState } from "react";
-import { useQuery, useMutation } from "@apollo/client";
+import React, { useEffect, useState } from "react";
+import { useQuery } from "@apollo/client";
 import { QUERY_USER } from "../../utils/queries";
-import { LOGIN_USER } from "../../utils/mutations";
 
 // Define the input type for the update
 interface UserProfile {
@@ -25,13 +24,9 @@ const SetPlayerModal: React.FC<SetPlayerModalProps> = ({
 	playerNum,
 }) => {
 	const [playerName, setPlayerName] = useState<string>("");
-	const [password, setPassword] = useState<string>("");
 	const [error, setError] = useState<string | null>(null);
 	const { data } = useQuery(QUERY_USER, {
 		variables: { username: playerName }, // Pass the username as a variable
-		onError: () => {
-			setError("An error occurred while searching for the user.");
-		},
 	});
 
 	useEffect(() => {
@@ -41,96 +36,25 @@ const SetPlayerModal: React.FC<SetPlayerModalProps> = ({
 	}, [nameValue]);
 
 	useEffect(() => {
-		if (playerNum == 1) {
-			if (data && data.user) {
-				onSetPlayer(playerNum, playerName, data.user); // Call the parent function if user exists
-				setError("User found!");
-			} else if (data && !data.user) {
-				onSetPlayer(playerNum, "", {});
-				setError("User not found. Please try a different username.");
-			}
+		if (data && data.user) {
+			onSetPlayer(playerNum, playerName, data.user); // Call the parent function if user exists
+			setError("User found!");
+		} else if (data && !data.user) {
+			onSetPlayer(playerNum, "", {});
+			setError("User not found. Please try a different username.");
 		}
 	}, [data]);
-
-	const [login, { error: _loginError, data: _loginData }] =
-		useMutation(LOGIN_USER);
-	const confirmUser = async (event: any) => {
-		event.preventDefault();
-		const userInputs = {
-			email: playerName,
-			password: password,
-		};
-		try {
-			const { data } = await login({
-				variables: { ...userInputs },
-			});
-
-			console.log(data);
-
-			if (data.login.user) {
-				onSetPlayer(playerNum, data.login.user.username, data.login.user); // Call the parent function if user exists
-				setError("User found!");
-			} else if (!data.login.user.username) {
-				onSetPlayer(playerNum, "", {});
-				setError("User not found. Please try a different username.");
-			}
-		} catch (e) {
-			console.error(e);
-		}
-	};
-
-	const changePassword = (event: ChangeEvent<HTMLInputElement>) => {
-		const { value } = event.target;
-		setPassword(value);
-	};
 
 	return (
 		<div className="">
 			<form>
-				{playerNum == 1 ? (
-					<>
-						<input
-							type="text"
-							value={playerName}
-							onChange={(e) => setPlayerName(e.target.value)}
-							placeholder={"Enter Player " + playerNum + " username"}
-							readOnly={nameValue ? true : false}
-						/>
-					</>
-				) : (
-					<>
-						<input
-							type="text"
-							value={playerName}
-							onChange={(e) => setPlayerName(e.target.value)}
-							placeholder={"Enter Player " + playerNum + " email"}
-							readOnly={nameValue ? true : false}
-						/>
-					</>
-				)}
-				{playerNum == 2 ? (
-					<>
-						<input
-							placeholder="Enter player 2 password"
-							type="password"
-							name="p2pass"
-							id="p2pass"
-							onChange={changePassword}
-							value={password}
-						/>
-					</>
-				) : (
-					<></>
-				)}
-				{playerNum == 2 ? (
-					<>
-						<button className="btn btn-info ml-2" onClick={confirmUser}>
-							Submit
-						</button>
-					</>
-				) : (
-					<></>
-				)}
+				<input
+					type="text"
+					value={playerName}
+					onChange={(e) => setPlayerName(e.target.value)}
+					placeholder={"Enter Player " + playerNum + " username"}
+					readOnly={nameValue ? true : false}
+				/>
 			</form>
 			{error && <p className="error">{error}</p>}
 		</div>
