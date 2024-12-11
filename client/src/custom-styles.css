@@ -165,6 +165,16 @@ body {
 	/* Animation for sliding in */
 }
 
+.invite-modal-content {
+	background: white;
+	color: black;
+	padding: 20px;
+	border-radius: 8px;
+	margin-top: 20px;
+	/* Space from the top */
+	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
 .modal-content {
 	background: black;
 	color: black;
