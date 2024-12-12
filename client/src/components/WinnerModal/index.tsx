@@ -33,10 +33,10 @@ const WinnerModal: React.FC<WinnerModalProps> = ({
         particleCount: 75,
         angle: 100,
         spread: 60,
-		gravity: 5,
-		colors: ["#88c9f2", "#aad3ea"],
+        gravity: 5,
+        colors: ["#88c9f2", "#aad3ea"],
         origin: { x: Math.random(), y: 1 },
-		shapes: ["circle"],
+        shapes: ["circle"],
       });
     }, 950);
   };
@@ -77,7 +77,9 @@ const WinnerModal: React.FC<WinnerModalProps> = ({
   return (
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal-content">
-        <h2 className={winner.toLowerCase()}>{playerName} wins!</h2>
+        <h2 className={winner === "draw" ? "draw" : currentPlayer.toLowerCase()}>
+          {winner === "draw" ? "Its a draw" : `${playerName} wins!`}
+        </h2>
       </div>
     </div>
   );

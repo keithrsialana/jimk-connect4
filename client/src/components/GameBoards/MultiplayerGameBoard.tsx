@@ -39,18 +39,6 @@ const MultiplayerGameBoard: React.FC = () => {
 
   const [player1Data, setPlayer1Data] = useState<UserProfile>();
   const [player2Data, setPlayer2Data] = useState<UserProfile>();
-  // const [player1Data, setPlayer1Data] = useState({
-  //   username: "",
-  //   gamesPlayed: 0,
-  //   wins: 0,
-  //   losses: 0
-  // });
-  // const [player2Data, setPlayer2Data] = useState({
-  //   username: "",
-  //   gamesPlayed: 0,
-  //   wins: 0,
-  //   losses: 0
-  // });
 
   const player1Query = useQuery(QUERY_USER, {
     variables: { username: roomUsernames[0] },
@@ -79,7 +67,7 @@ const MultiplayerGameBoard: React.FC = () => {
   useEffect(() => {
     const { data: player2DBData } = player2Query;
     if (player2DBData) {
-      console.log("check the id first:" + player2DBData._id)
+      console.log("check the id first:" + player2DBData._id);
       setPlayer2Data({
         _id: player2DBData.user._id,
         username: player2DBData.user.username,
@@ -202,6 +190,8 @@ const MultiplayerGameBoard: React.FC = () => {
                     if (checkWinner(newBoard, r, col)) {
                       handleGameEnd(`${currentPlayer}`);
                       // switches player
+                    } else if (isBoardFull(newBoard)) {
+                      handleGameEnd("draw");
                     } else {
                       const currentPlayerIndex = players.indexOf(
                         String(socket?.id)
@@ -228,6 +218,17 @@ const MultiplayerGameBoard: React.FC = () => {
     }
     alert("Column is full");
   }
+
+  const isBoardFull = (board: (null | "Red" | "Yellow")[][]) => {
+    for (let r = 0; r < rows; r++) {
+      for (let c = 0; c < cols; c++) {
+        if (board[r][c] === null) {
+          return false;
+        }
+      }
+    }
+    return true;
+  };
 
   const checkWinner = (
     board: (null | "Red" | "Yellow")[][],
@@ -286,7 +287,7 @@ const MultiplayerGameBoard: React.FC = () => {
   const [winner, setWinner] = useState<string | null>(null);
 
   const handleGameEnd = (winningPlayer: string) => {
-     setWinner(winningPlayer);
+    setWinner(winningPlayer);
   };
 
   const handleCloseModal = () => {
@@ -298,7 +299,12 @@ const MultiplayerGameBoard: React.FC = () => {
 
   useEffect(() => {
     // Ensure player profiles are available and valid
-    if (player1Data && player2Data && winner !== null && !statsUpdatedRef.current) {
+    if (
+      player1Data &&
+      player2Data &&
+      winner !== null &&
+      !statsUpdatedRef.current
+    ) {
       const updatePlayerStats = (playerProfile: any, isWinner: any) => {
         const gamesPlayed = playerProfile.games_played + 1;
         const gamesWon = isWinner
@@ -307,7 +313,7 @@ const MultiplayerGameBoard: React.FC = () => {
         const gamesLost = isWinner
           ? playerProfile.games_lost
           : playerProfile.games_lost + 1;
-  
+
         return {
           _id: playerProfile._id,
           username: playerProfile.username,
@@ -317,51 +323,98 @@ const MultiplayerGameBoard: React.FC = () => {
           games_lost: gamesLost,
         };
       };
-  
-      const player1Stats = updatePlayerStats(
-        player1Data,
-        winner === "Red"
-      );
-      const player2Stats = updatePlayerStats(
-        player2Data,
-        winner === "Yellow"
-      );
-  
-      setPlayer1Data(player1Stats);
-      setPlayer2Data(player2Stats);
-      
-      console.log("checking the id " + JSON.stringify(player1Data._id));
-  
-      // Function to update player stats and handle errors
-      const updateStats = async (stats: any, playerNumber: any) => {
-        try {
-          await updateGameStats({
-            variables: { input: stats },
-            refetchQueries: [
-              {
-                query: QUERY_USER,
-                variables: { username: stats.username },
-              },
-            ],
-          });
-        } catch (error: any) {
-          console.error(
-            `Error updating Player ${playerNumber}: ${
-              error.graphQLErrors[0]?.message || error.message
-            }`
-          );
-        }
-      };
-  
-      // Create an async function to handle the updates
-      const updatePlayerStatsAsync = async () => {
-        await updateStats(player1Stats, 1);
-        await updateStats(player2Stats, 2);
-        statsUpdatedRef.current = true;
-      };
-  
-      // Call the async function
-      updatePlayerStatsAsync();
+
+      if (winner === "draw") {
+        const player1Stats = {
+          _id: player1Data._id,
+          username: player1Data.username,
+          email: player1Data.email,
+          games_played: (player1Data.games_played || 0) + 1,
+          games_won: player1Data.games_won,
+          games_lost: player1Data.games_lost,
+        };
+        const player2Stats = {
+          _id: player2Data._id,
+          username: player2Data.username,
+          email: player2Data.email,
+          games_played: (player2Data.games_played || 0) + 1,
+          games_won: player2Data.games_won,
+          games_lost: player2Data.games_lost,
+        };
+
+        setPlayer1Data(player1Stats);
+        setPlayer2Data(player2Stats);
+
+        const updateStats = async (stats: any, playerNumber: any) => {
+          try {
+            await updateGameStats({
+              variables: { input: stats },
+              refetchQueries: [
+                {
+                  query: QUERY_USER,
+                  variables: { username: stats.username },
+                },
+              ],
+            });
+          } catch (error: any) {
+            console.error(
+              `Error updating Player ${playerNumber}: ${
+                error.graphQLErrors[0]?.message || error.message
+              }`
+            );
+          }
+        };
+
+        const updatePlayerStatsAsync = async () => {
+          await updateStats(player1Stats, 1);
+          await updateStats(player2Stats, 2);
+          statsUpdatedRef.current = true;
+        };
+
+        updatePlayerStatsAsync();
+      } else {
+        const player1Stats = updatePlayerStats(player1Data, winner === "Red");
+        const player2Stats = updatePlayerStats(
+          player2Data,
+          winner === "Yellow"
+        );
+
+        setPlayer1Data(player1Stats);
+        setPlayer2Data(player2Stats);
+
+        console.log("checking the id " + JSON.stringify(player1Data._id));
+
+        // Function to update player stats and handle errors
+        const updateStats = async (stats: any, playerNumber: any) => {
+          try {
+            await updateGameStats({
+              variables: { input: stats },
+              refetchQueries: [
+                {
+                  query: QUERY_USER,
+                  variables: { username: stats.username },
+                },
+              ],
+            });
+          } catch (error: any) {
+            console.error(
+              `Error updating Player ${playerNumber}: ${
+                error.graphQLErrors[0]?.message || error.message
+              }`
+            );
+          }
+        };
+
+        // Create an async function to handle the updates
+        const updatePlayerStatsAsync = async () => {
+          await updateStats(player1Stats, 1);
+          await updateStats(player2Stats, 2);
+          statsUpdatedRef.current = true;
+        };
+
+        // Call the async function
+        updatePlayerStatsAsync();
+      }
     }
   }, [winner]);
 
