@@ -77,7 +77,9 @@ const WinnerModal: React.FC<WinnerModalProps> = ({
   return (
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal-content">
-        <h2 className={winner.toLowerCase()}>{playerName} wins!</h2>
+        <h2 className={winner === 'draw' ? 'draw' : currentPlayer.toLowerCase()}>
+          {winner === 'draw' ? 'It\s a draw' : `${playerName} wins!`}
+        </h2>
       </div>
     </div>
   );

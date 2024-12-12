@@ -1736,6 +1736,10 @@ label form [type='radio'] {
   color: yellow;
 }
 
+.draw {
+  color: white;
+}
+
 .game-board {
   display: grid;
   grid-template-columns: repeat(7, 50px);
