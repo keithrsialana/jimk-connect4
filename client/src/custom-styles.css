@@ -11,6 +11,7 @@
 
 body {
 	color: white;
+	justify-content: center;
 }
 
 .btn {
@@ -62,7 +63,9 @@ body {
 	border-radius: 15px 15px;
 	background-color: #2b2b4f;
 	display: flex;
+	margin: 3rem;
 	width: 300px;
+	min-width: 300px;
 	flex-direction: column;
 	box-shadow: 0 15px 13px rgba(0, 0, 0, 0.2);
 	justify-content: center;
@@ -73,7 +76,9 @@ body {
 	border-radius: 15px 15px;
 	background-color: #2b2b4f;
 	display: flex;
+	margin: 3rem;
 	width: 300px;
+	min-width: 300px;
 	flex-direction: column;
 	box-shadow: 0 15px 13px rgba(0, 0, 0, 0.2);
 	justify-content: center;
@@ -120,6 +125,32 @@ body {
 .card .card-header {
 	border-radius: 20px 20px 0 0;
 	background-color: var(--primary) !important;
+}
+
+.game-mode-title-bg {
+	background-color: #2b2b4f;
+	width: 100%;
+}
+
+.game-mode-title {
+	background-color: #2b2b4f;
+	align-items: center;
+	justify-content: center;
+	padding: 1rem;
+	display: flex;
+	font-weight: 400;
+	font-style: italic;
+}
+
+.restart-btn {
+	align-items: center;
+	justify-items: center;
+	display: flex;
+}
+
+.restart-btn-container {
+	display: flex;
+	align-items: center;
 }
 
 .header {
@@ -185,5 +216,26 @@ body {
 	to {
 		transform: translateY(0);
 		opacity: 1;
+	}
+}
+
+@media (max-width: 1140px) {
+	/* Styles for screens smaller than 768px */
+
+	.game-container {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		margin-top: 0rem;
+		margin-bottom: 0rem;
+	}
+
+	.game-board {
+		margin-top: 3rem;
+	}
+
+	.in-game-profile-p1, .in-game-profile-p2 {
+		flex-direction: row;
+		width: max-content;
 	}
 }

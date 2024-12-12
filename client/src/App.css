@@ -453,6 +453,10 @@ a:hover {
   min-height: 100vh;
 }
 
+.min-75-vh {
+  min-height: 75vh;
+}
+
 .min-100-vw {
   min-width: 100vw;
 }
@@ -1175,7 +1179,8 @@ label form [type='radio'] {
 }
 
 .container.container-fluid {
-  width: 92%;
+  width: 90%;
+
 }
 
 /* FLEX CONTENT */
@@ -1714,12 +1719,13 @@ label form [type='radio'] {
 .game-container {
   position: relative;
   text-align: center;
-  margin: 20px auto;
+  margin-top: 5rem;
   flex-direction: row;
-  width: max-content;
+  /* width: max-content; */
   align-items: center;
   justify-content: center;
   display: flex;
+  margin-bottom: 5rem;
 }
 
 .red {
@@ -1734,7 +1740,6 @@ label form [type='radio'] {
   display: grid;
   grid-template-columns: repeat(7, 50px);
   grid-gap: 7px;
-  margin: 4rem;
   justify-content: center;
   align-items: center;
   /* border: 4px solid #999; */
@@ -1806,4 +1811,20 @@ label form [type='radio'] {
 .current-move {
   margin: 1rem;
   text-align: center;
+}
+
+@media (max-width: 1140px) {
+  /* Styles for screens smaller than 768px */
+
+  .game-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 0rem;
+    margin-bottom: 0rem;
+  }
+
+  .game-board {
+    margin-top: 3rem;
+  }
 }

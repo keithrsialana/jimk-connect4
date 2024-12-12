@@ -364,11 +364,14 @@ const MultiplayerGameBoard: React.FC = () => {
   return (
     <>
       {!gameStart ? (
-        <div className="text-center">
+        <div className="text-center min-75-vh">
           <h1>Invite Code: {roomId}</h1>
         </div>
       ) : (
         <div>
+          <div className="game-mode-title-bg">
+            <h1 className="game-mode-title">Multiplayer Game</h1>
+          </div>
           <div>
             <h1 className="current-move">
               Current Move:{" "}
