@@ -28,7 +28,7 @@ const InviteModal: React.FC<InviteModalProps> = ({ isOpen, onClose }) => {
 
 	return (
 		<div className="modal-overlay" onClick={onClose}>
-			<div className="modal-content" onClick={(e) => e.stopPropagation()}>
+			<div className="invite-modal-content" onClick={(e) => e.stopPropagation()}>
 				<h2>Join a room</h2>
                 <p>To join a room, ask for the invite code, and enter it below.</p>
 				<form onSubmit={handleSubmit}>
