@@ -48,7 +48,7 @@ const Home = () => {
 
   return (
     <main>
-      <div className="flex-column justify-center align">
+      <div className="flex-column justify-center align min-75-vh">
         <Link to="/game" className="btn btn-primary py-3">
           Local 1v1
         </Link>

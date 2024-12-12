@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import WinnerModal from "../WinnerModal";
 import { useSocket } from "../../context/SocketContext";
 import { useParams } from "react-router-dom";
@@ -280,6 +280,7 @@ const MultiplayerGameBoard: React.FC = () => {
     // clear game board
     setBoard(Array.from({ length: rows }, () => Array(cols).fill(null)));
     // setCurrentPlayer("Red");
+    statsUpdatedRef.current = false;
   };
 
   const [winner, setWinner] = useState<string | null>(null);
@@ -293,9 +294,11 @@ const MultiplayerGameBoard: React.FC = () => {
     resetGame();
   };
 
+  const statsUpdatedRef = useRef(false);
+
   useEffect(() => {
     // Ensure player profiles are available and valid
-    if (player1Data && player2Data) {
+    if (player1Data && player2Data && winner !== null && !statsUpdatedRef.current) {
       const updatePlayerStats = (playerProfile: any, isWinner: any) => {
         const gamesPlayed = playerProfile.games_played + 1;
         const gamesWon = isWinner
@@ -354,6 +357,7 @@ const MultiplayerGameBoard: React.FC = () => {
       const updatePlayerStatsAsync = async () => {
         await updateStats(player1Stats, 1);
         await updateStats(player2Stats, 2);
+        statsUpdatedRef.current = true;
       };
   
       // Call the async function
@@ -364,11 +368,14 @@ const MultiplayerGameBoard: React.FC = () => {
   return (
     <>
       {!gameStart ? (
-        <div className="text-center">
+        <div className="text-center min-75-vh">
           <h1>Invite Code: {roomId}</h1>
         </div>
       ) : (
         <div>
+          <div className="game-mode-title-bg">
+            <h1 className="game-mode-title">Multiplayer Game</h1>
+          </div>
           <div>
             <h1 className="current-move">
               Current Move:{" "}
