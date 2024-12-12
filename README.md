@@ -46,6 +46,15 @@ MIT
 - Automatic winner detection
 - Responsive design for mobile and desktop devices (WIP)
 ## Future Plans
-
+- local — enter username and confirm password for second user/or auto make a guest account
+- multiplayer — rematch functionality
+- multiplayer — find new game functionality
+- multiplayer — return to home option after game completion
+- multiplayer — forfeit match functionality
+- multiplayer — when a player leaves game, kick both players to the app home with alert message “opponent has left game”
+- multiplayer — ranking system and global leaderboard
+- multiplayer — record vs opponent stat functionality
+- multiplayer — turn based timer (20 or 30 seconds) with auto select enabled if user doesn’t make a move fast enough
+- multiplayer — random room functionality
 ## Screenshots
 Coming soon!

@@ -96,6 +96,8 @@ const SinglePlayerGameBoard: React.FC = () => {
                   if (checkWinner(newBoard, r, col)) {
                     handleGameEnd(`${currentPlayer}`);
                     // switches player
+                  } else if (isBoardFull(newBoard)) {
+                    handleGameEnd("draw");
                   } else {
                     setCurrentPlayer(
                       currentPlayer === "Red" ? "Yellow" : "Red"
@@ -112,6 +114,17 @@ const SinglePlayerGameBoard: React.FC = () => {
     }
     alert("Column is full");
   }
+
+  const isBoardFull = (board: (null | "Red" | "Yellow")[][]) => {
+	for (let r = 0; r < rows; r++) {
+	  for (let c = 0; c < cols; c++) {
+		if (board[r][c] === null) {
+		  return false;
+		}
+	  }
+	}
+	return true;
+  };
 
   const checkWinner = (
     board: (null | "Red" | "Yellow")[][],
@@ -171,64 +184,117 @@ const SinglePlayerGameBoard: React.FC = () => {
   const handleGameEnd = async (winningPlayer: string) => {
     console.log("The winning player is: " + winningPlayer);
 
-    // Ensure player profiles are available and valid
-    if (player1Profile && player2Profile) {
-      const updatePlayerStats = (playerProfile: any, isWinner: any) => {
-        const gamesPlayed = playerProfile.games_played + 1;
-        const gamesWon = isWinner
-          ? playerProfile.games_won + 1
-          : playerProfile.games_won;
-        const gamesLost = isWinner
-          ? playerProfile.games_lost
-          : playerProfile.games_lost + 1;
+    if (winningPlayer === "draw") {
+		setWinner("draw");
 
-        return {
-          _id: playerProfile._id,
-          username: playerProfile.username,
-          email: playerProfile.email,
-          games_played: gamesPlayed,
-          games_won: gamesWon,
-          games_lost: gamesLost,
+		if (player1Profile && player2Profile) {
+			const updatePlayerStats = (playerProfile: any) => {
+			  const gamesPlayed = playerProfile.games_played + 1;
+			  const gamesWon = playerProfile.games_won;
+			  const gamesLost = playerProfile.games_lost;
+	
+			  return {
+				_id: playerProfile._id,
+				username: playerProfile.username,
+				email: playerProfile.email,
+				games_played: gamesPlayed,
+				games_won: gamesWon,
+				games_lost: gamesLost,
+			  };
+			};
+	
+			const player1Stats = updatePlayerStats(player1Profile);
+			const player2Stats = updatePlayerStats(player2Profile);
+	
+			// Update the state immediately with the new stats
+			setPlayer1Profile(player1Stats);
+			setPlayer2Profile(player2Stats);
+	
+			// Function to update player stats and handle errors
+			const updateStats = async (stats: any, playerNumber: any) => {
+			  try {
+				await updateGameStats({
+				  variables: { input: stats },
+				  refetchQueries: [
+					{
+					  query: stats ? QUERY_USER : QUERY_ME,
+					  variables: { username: stats.username },
+					},
+				  ],
+				});
+			  } catch (error: any) {
+				console.error(
+				  `Error updating Player ${playerNumber}: ${
+					error.graphQLErrors[0]?.message || error.message
+				  }`
+				);
+			  }
+			};
+	
+			// Update both players' stats
+			await updateStats(player1Stats, 1);
+			await updateStats(player2Stats, 2);
+		  }
+    } else {
+      // Ensure player profiles are available and valid
+      if (player1Profile && player2Profile) {
+        const updatePlayerStats = (playerProfile: any, isWinner: any) => {
+          const gamesPlayed = playerProfile.games_played + 1;
+          const gamesWon = isWinner
+            ? playerProfile.games_won + 1
+            : playerProfile.games_won;
+          const gamesLost = isWinner
+            ? playerProfile.games_lost
+            : playerProfile.games_lost + 1;
+
+          return {
+            _id: playerProfile._id,
+            username: playerProfile.username,
+            email: playerProfile.email,
+            games_played: gamesPlayed,
+            games_won: gamesWon,
+            games_lost: gamesLost,
+          };
         };
-      };
 
-      const player1Stats = updatePlayerStats(
-        player1Profile,
-        winningPlayer === "Red"
-      );
-      const player2Stats = updatePlayerStats(
-        player2Profile,
-        winningPlayer === "Yellow"
-      );
+        const player1Stats = updatePlayerStats(
+          player1Profile,
+          winningPlayer === "Red"
+        );
+        const player2Stats = updatePlayerStats(
+          player2Profile,
+          winningPlayer === "Yellow"
+        );
 
-      // Update the state immediately with the new stats
-      setPlayer1Profile(player1Stats);
-      setPlayer2Profile(player2Stats);
+        // Update the state immediately with the new stats
+        setPlayer1Profile(player1Stats);
+        setPlayer2Profile(player2Stats);
 
-      // Function to update player stats and handle errors
-      const updateStats = async (stats: any, playerNumber: any) => {
-        try {
-          await updateGameStats({
-            variables: { input: stats },
-            refetchQueries: [
-              {
-                query: stats ? QUERY_USER : QUERY_ME,
-                variables: { username: stats.username },
-              },
-            ],
-          });
-        } catch (error: any) {
-          console.error(
-            `Error updating Player ${playerNumber}: ${
-              error.graphQLErrors[0]?.message || error.message
-            }`
-          );
-        }
-      };
+        // Function to update player stats and handle errors
+        const updateStats = async (stats: any, playerNumber: any) => {
+          try {
+            await updateGameStats({
+              variables: { input: stats },
+              refetchQueries: [
+                {
+                  query: stats ? QUERY_USER : QUERY_ME,
+                  variables: { username: stats.username },
+                },
+              ],
+            });
+          } catch (error: any) {
+            console.error(
+              `Error updating Player ${playerNumber}: ${
+                error.graphQLErrors[0]?.message || error.message
+              }`
+            );
+          }
+        };
 
-      // Update both players' stats
-      await updateStats(player1Stats, 1);
-      await updateStats(player2Stats, 2);
+        // Update both players' stats
+        await updateStats(player1Stats, 1);
+        await updateStats(player2Stats, 2);
+      }
     }
 
     setWinner(winningPlayer);
@@ -269,6 +335,9 @@ const SinglePlayerGameBoard: React.FC = () => {
     <>
       {gamestart ? (
         <div>
+          <div className="game-mode-title-bg">
+            <h1 className="game-mode-title">Local Game</h1>
+          </div>
           <div>
             <h1 className="current-move">
               Current Move:{" "}
@@ -309,12 +378,6 @@ const SinglePlayerGameBoard: React.FC = () => {
                   ))
                 )}
               </div>
-              <button
-                className="btn btn-danger button-margin"
-                onClick={resetGame}
-              >
-                Restart Game
-              </button>
               <WinnerModal
                 winner={winner}
                 playerName={winner == "Red" ? player1 : player2}
@@ -344,23 +407,40 @@ const SinglePlayerGameBoard: React.FC = () => {
               </div>
             </div>
           </div>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+            className="restart-btn-container"
+          >
+            <button
+              className="btn btn-danger button-margin restart-btn"
+              onClick={resetGame}
+            >
+              Restart Game
+            </button>
+          </div>
         </div>
       ) : (
         <>
-          <h2>Starting Game...</h2>
-          <SetPlayerModal
-            playerNum={1}
-            onSetPlayer={handleSetPlayer}
-            nameValue={Auth.getProfile().data.username}
-          />
-          <SetPlayerModal playerNum={2} onSetPlayer={handleSetPlayer} />
-          {gameStartButton ? (
-            <button className="btn btn-primary" onClick={handleGameStart}>
-              Start Game
-            </button>
-          ) : (
-            <></>
-          )}
+          <div className="min-75-vh">
+            <h2>Starting Game...</h2>
+            <SetPlayerModal
+              playerNum={1}
+              onSetPlayer={handleSetPlayer}
+              nameValue={Auth.getProfile().data.username}
+            />
+            <SetPlayerModal playerNum={2} onSetPlayer={handleSetPlayer} />
+            {gameStartButton ? (
+              <button className="btn btn-primary" onClick={handleGameStart}>
+                Start Game
+              </button>
+            ) : (
+              <></>
+            )}
+          </div>
         </>
       )}
     </>
